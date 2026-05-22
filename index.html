@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medical Checklist</title>
+
+  <!-- ✅ Correct script tags -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root{
+      --radius: 18px;
+      --shadow: 0 22px 60px rgba(0,0,0,.12);
+      --shadow2: 0 12px 30px rgba(0,0,0,.10);
+      --t: .18s ease;
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    /* =========================
+       THEME 1 (DEFAULT): CLOUDS ☁️
+       ========================= */
+    [data-theme="clouds"]{
+      --bgSolid: #f6fbff;
+      --panel: rgba(255,255,255,.92);
+      --panel2: rgba(255,255,255,.84);
+      --line: rgba(15,23,42,.10);
+      --text: #0b1220;
+      --muted: #51637d;
+      --accent: #0ea5a4;
+      --accent2:#2563eb;
+      --danger:#e11d48;
+      --focus: 0 0 0 4px rgba(37,99,235,.18);
+
+      --grad1: radial-gradient(1200px 520px at 15% -10%, rgba(37,99,235,.16), transparent 60%);
+      --grad2: radial-gradient(900px 480px at 90% 0%, rgba(14,165,164,.14), transparent 60%);
+      --grad3: radial-gradient(900px 520px at 20% 115%, rgba(255,255,255,.90), transparent 60%);
+      --grad4: radial-gradient(900px 520px at 90% 115%, rgba(255,255,255,.85), transparent 62%);
+    }
+
+    /* THEME 2: NIGHT SHIFT */
+    [data-theme="night"]{
+      --bgSolid: #070c16;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.04);
+      --line: rgba(255,255,255,.10);
+      --text: #eaf1ff;
+      --muted: #a9b7dc;
+      --accent: #35d0ba;
+      --accent2:#5aa7ff;
+      --danger:#ff4d79;
+      --focus: 0 0 0 4px rgba(53,208,186,.18);
+
+      --grad1: radial-gradient(1200px 600px at 20% -10%, rgba(90,167,255,.26), transparent 60%);
+      --grad2: radial-gradient(900px 500px at 92% 0%, rgba(53,208,186,.20), transparent 60%);
+      --grad3: radial-gradient(700px 500px at 20% 110%, rgba(255,255,255,.06), transparent 60%);
+      --grad4: radial-gradient(700px 500px at 90% 110%, rgba(255,255,255,.05), transparent 60%);
+    }
+
+    /* THEME 3: NEON PULSE */
+    [data-theme="neon"]{
+      --bgSolid:#050412;
+      --panel: rgba(255,255,255,.07);
+      --panel2: rgba(255,255,255,.05);
+      --line: rgba(255,255,255,.12);
+      --text: #eef0ff;
+      --muted: #b4b7e5;
+      --accent:#b8ff6a;
+      --accent2:#7c3aed;
+      --danger:#ff3d9a;
+      --focus: 0 0 0 4px rgba(184,255,106,.18);
+
+      --grad1: radial-gradient(1200px 600px at 20% -10%, rgba(124,58,237,.26), transparent 60%);
+      --grad2: radial-gradient(900px 500px at 92% 0%, rgba(184,255,106,.16), transparent 60%);
+      --grad3: radial-gradient(700px 500px at 20% 110%, rgba(124,58,237,.16), transparent 60%);
+      --grad4: radial-gradient(700px 500px at 90% 110%, rgba(184,255,106,.10), transparent 60%);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      background: var(--grad1), var(--grad2), var(--grad3), var(--grad4), var(--bgSolid);
+      color: var(--text);
+    }
+
+    .wrap{ min-height:100%; padding: 18px; display:flex; justify-content:center; }
+    .container{ width: min(1100px, 100%); display:flex; flex-direction:column; gap:14px; }
+
+    .card{
+      border-radius: var(--radius);
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow: var(--shadow2);
+      padding:14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .topRow{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+    .title{ font-weight: 950; letter-spacing:.2px; font-size: 18px; margin:0; display:flex; align-items:center; gap:10px; }
+    .sub{ margin:6px 0 0; color: var(--muted); font-size: 13px; line-height:1.45; }
+
+    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+    .select{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      outline:none;
+      min-width: 190px;
+    }
+    .select:focus{ box-shadow: var(--focus); }
+
+    .btnDanger{
+      border-radius: 14px;
+      border:1px solid rgba(225,29,72,.35);
+      background: rgba(225,29,72,.10);
+      color: var(--text);
+      padding: 10px 12px;
+      cursor:pointer;
+      font-weight: 900;
+      transition: transform var(--t), filter var(--t);
+    }
+    .btnDanger:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+
+    .countdownRow{ display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; }
+    .bigCountdown{ font-size: 22px; font-weight: 1000; letter-spacing:.2px; }
+    .smallCountdown{ font-size: 13px; color: var(--muted); font-weight: 800; }
+
+    .progressMeta{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .progressMeta strong{ color: var(--text); font-weight: 1000; }
+    .bar{
+      margin-top:8px;
+      height: 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.12);
+      border:1px solid var(--line);
+      overflow:hidden;
+    }
+    .barFill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      transition: width .55s ease;
+    }
+
+    .dateStrip{ display:flex; gap:10px; overflow:auto; padding-bottom:2px; scrollbar-width: thin; }
+    .datePill{
+      flex: 0 0 auto;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 12px;
+      font-weight: 900;
+      transition: transform var(--t), border-color var(--t), background var(--t);
+      display:flex; align-items:center; gap:8px;
+    }
+    .datePill:hover{ transform: translateY(-1px); border-color: rgba(37,99,235,.35); }
+    .datePill.active{ background: rgba(37,99,235,.10); border-color: rgba(37,99,235,.45); }
+    .datePill.today{ background: rgba(14,165,164,.10); border-color: rgba(14,165,164,.45); }
+    .miniDot{ width:8px; height:8px; border-radius:50%; background: var(--accent); }
+
+    .todayTitle{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom: 10px;
+    }
+    .todayTitle h2{ margin:0; font-size: 16px; font-weight: 1000; }
+    .todayTitle .right{
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .subjectBlock{ padding: 10px 2px; }
+    .subjectName{
+      font-weight: 950;
+      font-size: 13px;
+      margin:0 0 10px 0;
+      letter-spacing: .2px;
+    }
+    .divider{ border:0; border-top:1px solid var(--line); margin: 8px 0; opacity: .65; }
+
+    .list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+    .item{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      border-radius: 16px;
+      padding: 10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition: transform var(--t), border-color var(--t), background var(--t);
+      position:relative;
+      overflow:hidden;
+    }
+    .item:hover{ transform: translateY(-1px); border-color: rgba(14,165,164,.35); }
+    .chk{ width:18px; height:18px; accent-color: var(--accent); cursor:pointer; }
+    .text{ font-weight: 900; font-size: 13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .item.done{ border-color: rgba(14,165,164,.45); background: rgba(14,165,164,.10); }
+    [data-theme="night"] .item.done{ border-color: rgba(53,208,186,.45); background: rgba(53,208,186,.10); }
+    [data-theme="neon"] .item.done{ border-color: rgba(184,255,106,.45); background: rgba(184,255,106,.10); }
+    .item.done .text{ text-decoration: line-through; opacity:.75; }
+    .item::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(90deg, transparent, rgba(14,165,164,.18), transparent);
+      transform: translateX(-120%);
+      opacity:0;
+      transition: transform .55s ease, opacity .35s ease;
+    }
+    .item.done::after{ transform: translateX(120%); opacity:1; }
+
+    /* Note (May 30) */
+    .note{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      border-radius: 16px;
+      padding: 14px;
+      line-height: 1.9;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    .note .noteTitle{
+      font-weight: 1000;
+      margin-bottom: 8px;
+      letter-spacing:.2px;
+    }
+
+    .summaryRow{ display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; }
+    .summaryCard{ grid-column: span 4; padding:12px; }
+    @media (max-width: 880px){ .summaryCard{ grid-column: span 12; } }
+    .sumTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .sumTitle{ margin:0; color: var(--muted); font-size: 12px; font-weight: 1000; }
+    .sumVal{ font-weight: 1000; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .sumBar{
+      margin-top:8px;
+      height: 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.12);
+      overflow:hidden;
+    }
+    .sumFill{ height:100%; width:0%; transition: width .55s ease; }
+
+    /* Modal */
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index: 9999;
+    }
+    .modal{
+      width:min(520px, 96vw);
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow: var(--shadow);
+      padding:14px;
+      backdrop-filter: blur(10px);
+    }
+    .modal h3{ margin:0; font-size:16px; font-weight: 1000; }
+    .modal p{ margin:8px 0 0; color: var(--muted); font-size:13px; line-height:1.6; }
+    .modalBtns{ margin-top:14px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
+    .btn{
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      padding: 10px 12px;
+      cursor:pointer;
+      font-weight: 1000;
+      transition: transform var(--t);
+      min-width: 140px;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btnRed{ border-color: rgba(225,29,72,.40); background: rgba(225,29,72,.12); }
+
+    /* Confetti */
+    .confettiWrap{ pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index: 9998; }
+    .confettiPiece{
+      position:absolute;
+      width:10px;
+      height:14px;
+      border-radius: 3px;
+      opacity:.95;
+      transform: translate3d(0,-20px,0) rotate(0deg);
+      animation: fall linear forwards;
+      will-change: transform, opacity;
+    }
+    @keyframes fall{
+      0%{ transform: translate3d(var(--x), -30px, 0) rotate(0deg); opacity: 1; }
+      100%{ transform: translate3d(calc(var(--x) + var(--drift)), calc(100vh + 30px), 0) rotate(var(--rot)); opacity: 0.95; }
+    }
+    .celebrateBanner{
+      position:fixed;
+      left:50%;
+      top:18px;
+      transform: translateX(-50%);
+      z-index: 9999;
+      pointer-events:none;
+      padding:10px 14px;
+      border-radius: 999px;
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      font-weight: 1000;
+      letter-spacing:.2px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      animation: pop .35s ease, fadeOut 3.0s ease forwards;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      color:#0b1220;
+    }
+    [data-theme="night"] .celebrateBanner,
+    [data-theme="neon"] .celebrateBanner{ background: rgba(255,255,255,.10); color: var(--text); }
+    @keyframes pop{
+      0%{ transform: translateX(-50%) translateY(-10px) scale(.98); opacity:0; }
+      100%{ transform: translateX(-50%) translateY(0) scale(1); opacity:1; }
+    }
+    @keyframes fadeOut{
+      0%{ opacity:1; }
+      75%{ opacity:1; }
+      100%{ opacity:0; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const {useEffect, useMemo, useRef, useState} = React;
+
+    const STORAGE_KEY = "medicalChecklist.v6";
+    const THEMES = { clouds: "Clouds (Default)", night: "Night Shift", neon: "Neon Pulse" };
+
+    const SUBJECTS_ORDER = ["Ortho", "Neuromedicine", "Neurosurgery", "Healthcare"];
+    const SUBJECT_LABEL = {
+      Ortho: "Orthopedics",
+      Neuromedicine: "Neuromedicine",
+      Neurosurgery: "Neurosurgery",
+      Healthcare: "Healthcare"
+    };
+
+    // ✅ Final totals (as requested)
+    const TOTAL_LECTURES = 44;
+
+    function startOfDay(date){ return new Date(date.getFullYear(), date.getMonth(), date.getDate()); }
+    function isoKey(date){ return startOfDay(date).toISOString().slice(0,10); }
+    function daysDiff(fromDate, toDate){
+      const ms = startOfDay(toDate) - startOfDay(fromDate);
+      return Math.round(ms / (1000*60*60*24));
+    }
+    function clampPct(x){ if(!isFinite(x)) return 0; return Math.max(0, Math.min(100, x)); }
+    function formatLong(date){
+      return date.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+    }
+
+    // Updated schedule reflecting ALL your edits
+    function buildSchedule(year){
+      const d = (m, day) => new Date(year, m, day);
+
+      return [
+        {
+          date: d(4,22), title:"22 May", note:null,
+          subjects:{
+            Ortho:["Principles of fractures"],
+            Neuromedicine:["Medical neurology"],
+            Neurosurgery:[],
+            Healthcare:["Evidence based medicine"]
+          }
+        },
+        {
+          date: d(4,23), title:"23 May", note:null,
+          subjects:{
+            Ortho:["Peripheral nerve injuries","X-ray"],
+            Neuromedicine:["CVA"],
+            Neurosurgery:[],
+            Healthcare:["Communication skills"]
+          }
+        },
+        {
+          date: d(4,24), title:"24 May", note:null,
+          subjects:{
+            Ortho:["Overview of Spine Anatomy","Scoliosis & kyphosis"],
+            Neuromedicine:["Peripheral nervous"],
+            Neurosurgery:[],
+            Healthcare:["Dr.Pt relationship"]
+          }
+        },
+        {
+          date: d(4,25), title:"25 May", note:null,
+          subjects:{
+            Ortho:[
+              "Spondylosis & spondylolisthesis",
+              "Spina bifida and torticollis",
+              "Spine disorders",
+              "Principles in spine fracture",
+              "Intervertebral disc prolapse"
+            ],
+            Neuromedicine:["Movement disorders"],
+            Neurosurgery:[],
+            Healthcare:["The Diagnostic process"]
+          }
+        },
+        {
+          date: d(4,26), title:"26 May", note:null,
+          subjects:{
+            Ortho:["Bone tumor x ray","Musculoskeletal"],
+            Neuromedicine:["Multiple sclerosis"],
+            Neurosurgery:["Back pain"],
+            Healthcare:["Breaking bad news"]
+          }
+        },
+        {
+          date: d(4,27), title:"27 May", note:null,
+          subjects:{
+            Ortho:["Upper limb (first half)"],  // ✅ exactly as requested
+            Neuromedicine:["Dementia"],
+            Neurosurgery:[],
+            Healthcare:["Counselling"]
+          }
+        },
+        {
+          date: d(4,28), title:"28 May", note:null,
+          subjects:{
+            Ortho:["Upper limb (second half)","Pediatric foot","Legg Calve Perthes disease"],
+            Neuromedicine:["Epilepsy"],
+            Neurosurgery:["CNS tumors"],
+            Healthcare:["Laboratory interpretation"]
+          }
+        },
+        {
+          date: d(4,29), title:"29 May", note:null,
+          subjects:{
+            Ortho:["Arthritis in hip & knee","SCFE","DDH","Genu varus and valgus","Lower limb"],
+            Neuromedicine:[], // ✅ removed from May 29
+            Neurosurgery:[],
+            Healthcare:["Difficult patient"]
+          }
+        },
+        {
+          date: d(4,30), title:"30 May", // ✅ empty day with note only
+          note:
+`بسم الله الرحمن الرحيم
+{ وَمَا لَنَاۤ أَلَّا نَتَوَكَّلَ عَلَى ٱللَّهِ وَقَدۡ هَدَىٰنَا سُبُلَنَاۚ وَلَنَصۡبِرَنَّ عَلَىٰ مَاۤ ءَاذَیۡتُمُونَاۚ وَعَلَى ٱللَّهِ فَلۡیَتَوَكَّلِ ٱلۡمُتَوَكِّلُونَ }
+[سُورَةُ إِبۡرَاهِيمَ: ١٢]`,
+          subjects:{ Ortho:[], Neuromedicine:[], Neurosurgery:[], Healthcare:[] }
+        },
+        {
+          date: d(4,31), title:"31 May", note:null,
+          subjects:{
+            Ortho:[],
+            Neuromedicine:["Infective neurological diseases"], // ✅ moved here
+            Neurosurgery:["Spinal injuries","Congenital anomalies"],
+            Healthcare:[]
+          }
+        },
+        {
+          date: d(5,1), title:"1 June", note:null,
+          subjects:{
+            Ortho:[],
+            Neuromedicine:["Headache"], // ✅ moved from 31 to 1
+            Neurosurgery:["Head injuries","Introduction to SAH"],
+            Healthcare:[]
+          }
+        },
+      ].map(day => {
+        const dateKey = isoKey(day.date);
+        const subjects = {};
+        SUBJECTS_ORDER.forEach(sub => {
+          subjects[sub] = (day.subjects[sub] || []).map((text, idx) => ({
+            id: `${dateKey}__${sub}__${idx}`,
+            text,
+            subject: sub,
+            dateKey
+          }));
+        });
+        return {...day, dateKey, subjects};
+      });
+    }
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      }catch{ return null; }
+    }
+    function saveState(state){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch{}
+    }
+
+    function makeConfettiPieces(count=150){
+      const colors = ["#2563eb","#0ea5a4","#22c55e","#f59e0b","#fb7185","#7c3aed","#38bdf8"];
+      const pieces = [];
+      for(let i=0;i<count;i++){
+        const left = Math.random() * 100;
+        const delay = Math.random() * 0.25;
+        const duration = 1.9 + Math.random() * 1.3;
+        const drift = (Math.random() * 160 - 80) + "px";
+        const rot = (Math.random() * 720 - 360) + "deg";
+        const x = left + "vw";
+        pieces.push({
+          id: `${Date.now()}_${i}`,
+          left: left + "vw",
+          top: (-10 - Math.random()*30) + "px",
+          bg: colors[Math.floor(Math.random()*colors.length)],
+          delay: delay + "s",
+          duration: duration + "s",
+          drift, rot, x
+        });
+      }
+      return pieces;
+    }
+
+    function App(){
+      const year = new Date().getFullYear();
+      const schedule = useMemo(() => buildSchedule(year), [year]);
+
+      const [theme, setTheme] = useState("clouds"); // ✅ default clouds
+      const [completed, setCompleted] = useState(() => new Set());
+      const [selectedDateKey, setSelectedDateKey] = useState(() => {
+        const today = isoKey(new Date());
+        return schedule.some(d => d.dateKey === today) ? today : schedule[0].dateKey;
+      });
+      const [showReset, setShowReset] = useState(false);
+
+      // Celebration
+      const [confetti, setConfetti] = useState([]);
+      const [showBanner, setShowBanner] = useState(false);
+      const celebratedRef = useRef({}); // celebrate once per dayKey
+
+      // Load state
+      useEffect(() => {
+        const st = loadState();
+        if(st){
+          if(Array.isArray(st.completedIds)) setCompleted(new Set(st.completedIds));
+          if(typeof st.theme === "string") setTheme(st.theme);
+          if(typeof st.selectedDateKey === "string" && schedule.some(d => d.dateKey === st.selectedDateKey)){
+            setSelectedDateKey(st.selectedDateKey);
+          }
+        }
+      }, [schedule]);
+
+      // Persist
+      useEffect(() => {
+        saveState({
+          completedIds: Array.from(completed),
+          theme,
+          selectedDateKey
+        });
+      }, [completed, theme, selectedDateKey]);
+
+      // Apply theme
+      useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+      }, [theme]);
+
+      const todayKey = useMemo(() => isoKey(new Date()), []);
+      const selectedDay = useMemo(
+        () => schedule.find(d => d.dateKey === selectedDateKey) || schedule[0],
+        [schedule, selectedDateKey]
+      );
+
+      const allItems = useMemo(() => {
+        const flat = [];
+        schedule.forEach(day => SUBJECTS_ORDER.forEach(s => flat.push(...day.subjects[s])));
+        return flat;
+      }, [schedule]);
+
+      const doneCount = useMemo(() => {
+        let n = 0;
+        for(const it of allItems) if(completed.has(it.id)) n++;
+        return n;
+      }, [allItems, completed]);
+
+      const overallPct = clampPct((doneCount / TOTAL_LECTURES) * 100);
+
+      // Selected day completion (topic-based)
+      const dayItems = useMemo(() => {
+        const flat = [];
+        SUBJECTS_ORDER.forEach(s => flat.push(...selectedDay.subjects[s]));
+        return flat;
+      }, [selectedDay]);
+
+      const dayDoneCount = useMemo(() => {
+        let n = 0;
+        for(const it of dayItems) if(completed.has(it.id)) n++;
+        return n;
+      }, [dayItems, completed]);
+
+      // Celebrate only when finishing all topics of the day, and ONLY if day has topics
+      useEffect(() => {
+        if(dayItems.length === 0) return;
+        const key = selectedDay.dateKey;
+        const isComplete = dayDoneCount === dayItems.length;
+
+        if(isComplete && !celebratedRef.current[key]){
+          celebratedRef.current[key] = true;
+          setShowBanner(true);
+          setConfetti(makeConfettiPieces(160));
+
+          const t1 = setTimeout(() => setShowBanner(false), 3200);
+          const t2 = setTimeout(() => setConfetti([]), 3600);
+          return () => { clearTimeout(t1); clearTimeout(t2); };
+        }
+      }, [dayDoneCount, dayItems.length, selectedDay.dateKey]);
+
+      function toggleItem(id){
+        setCompleted(prev => {
+          const next = new Set(prev);
+          next.has(id) ? next.delete(id) : next.add(id);
+          return next;
+        });
+      }
+
+      // Exams countdowns
+      const examOrthoHealth = useMemo(() => new Date(year, 4, 31), [year]); // May 31
+      const examNeuro = useMemo(() => new Date(year, 5, 2), [year]);       // June 2
+
+      const daysToOrthoHealth = useMemo(() => daysDiff(new Date(), examOrthoHealth), [examOrthoHealth]);
+      const daysToNeuro = useMemo(() => daysDiff(new Date(), examNeuro), [examNeuro]);
+
+      const orthoLabel =
+        daysToOrthoHealth > 0 ? `${daysToOrthoHealth} day${daysToOrthoHealth===1?"":"s"} left` :
+        daysToOrthoHealth === 0 ? `Exam day` :
+        `${Math.abs(daysToOrthoHealth)} day${Math.abs(daysToOrthoHealth)===1?"":"s"} ago`;
+
+      const neuroLabel =
+        daysToNeuro > 0 ? `${daysToNeuro} day${daysToNeuro===1?"":"s"} left` :
+        daysToNeuro === 0 ? `Exam day` :
+        `${Math.abs(daysToNeuro)} day${Math.abs(daysToNeuro)===1?"":"s"} ago`;
+
+      // Summary: Ortho, Healthcare, Neurology (Neuromedicine + Neurosurgery)
+      const summary = useMemo(() => {
+        const sums = { Ortho:{total:0,done:0}, Healthcare:{total:0,done:0}, Neurology:{total:0,done:0} };
+        for(const it of allItems){
+          const bucket = (it.subject === "Neuromedicine" || it.subject === "Neurosurgery") ? "Neurology" : it.subject;
+          sums[bucket].total += 1;
+          if(completed.has(it.id)) sums[bucket].done += 1;
+        }
+        const pct = (x) => clampPct((x.done/(x.total||1))*100);
+        return {
+          Ortho: {...sums.Ortho, pct: pct(sums.Ortho)},
+          Healthcare: {...sums.Healthcare, pct: pct(sums.Healthcare)},
+          Neurology: {...sums.Neurology, pct: pct(sums.Neurology)}
+        };
+      }, [allItems, completed]);
+
+      function gradientFor(key){
+        if(key === "Ortho") return "linear-gradient(90deg, #38bdf8, var(--accent))";
+        if(key === "Healthcare") return "linear-gradient(90deg, #fb7185, var(--accent2))";
+        return "linear-gradient(90deg, var(--accent2), var(--accent))";
+      }
+
+      function resetProgress(){
+        setCompleted(new Set());
+        celebratedRef.current = {};
+        setShowReset(false);
+      }
+
+      function renderDayBox(){
+        // If May 30 note day: show note only
+        if(selectedDay.note){
+          return (
+            <div className="note">
+              <div className="noteTitle">Text</div>
+              {selectedDay.note}
+            </div>
+          );
+        }
+
+        const blocks = [];
+        SUBJECTS_ORDER.forEach((sub) => {
+          const items = selectedDay.subjects[sub] || [];
+          if(items.length === 0) return; // ✅ ignore empty subjects entirely
+          blocks.push(
+            <div className="subjectBlock" key={sub}>
+              <p className="subjectName">{SUBJECT_LABEL[sub]}</p>
+              <ul className="list">
+                {items.map(it => {
+                  const isDone = completed.has(it.id);
+                  return (
+                    <li className={"item " + (isDone ? "done" : "")} key={it.id}>
+                      <input className="chk" type="checkbox" checked={isDone} onChange={() => toggleItem(it.id)} />
+                      <div className="text" title={it.text}>{it.text}</div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        });
+
+        const withDividers = [];
+        blocks.forEach((b, i) => {
+          withDividers.push(b);
+          if(i !== blocks.length - 1) withDividers.push(<hr className="divider" key={"div_" + i} />);
+        });
+
+        return withDividers;
+      }
+
+      return (
+        <>
+          {/* Confetti */}
+          {confetti.length > 0 && (
+            <div className="confettiWrap" aria-hidden="true">
+              {confetti.map(p => (
+                <div
+                  key={p.id}
+                  className="confettiPiece"
+                  style={{
+                    left: p.left,
+                    top: p.top,
+                    background: p.bg,
+                    animationDelay: p.delay,
+                    animationDuration: p.duration,
+                    "--drift": p.drift,
+                    "--rot": p.rot,
+                    "--x": p.x
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          {showBanner && (
+            <div className="celebrateBanner">
+              🎉 Completed all topics for {selectedDay.title}!
+            </div>
+          )}
+
+          <div className="wrap">
+            <div className="container">
+              {/* Header */}
+              <div className="card">
+                <div className="topRow">
+                  <div>
+                    <h1 className="title">🩺 Medical Checklist</h1>
+                    <p className="sub">Study plan • progress auto-saves locally</p>
+
+                    <div className="countdownRow">
+                      <div className="bigCountdown">
+                        Ortho + Healthcare exam: <span style={{color:"var(--accent2)"}}>{orthoLabel}</span>
+                      </div>
+                      <div className="smallCountdown">
+                        Neuromedicine exam: <span style={{color:"var(--muted)"}}>{neuroLabel}</span>
+                      </div>
+                    </div>
+
+                    <div className="progressMeta">
+                      <div>Progress: <strong>{Math.round(overallPct)}%</strong> (out of 100)</div>
+                      <div>Lectures completed: <strong>{doneCount}/{TOTAL_LECTURES}</strong></div>
+                    </div>
+
+                    <div className="bar" aria-label="Overall progress bar">
+                      <div className="barFill" style={{width: overallPct + "%"}}></div>
+                    </div>
+                  </div>
+
+                  <div className="controls">
+                    <select className="select" value={theme} onChange={(e)=>setTheme(e.target.value)} aria-label="Theme">
+                      <option value="clouds">{THEMES.clouds}</option>
+                      <option value="night">{THEMES.night}</option>
+                      <option value="neon">{THEMES.neon}</option>
+                    </select>
+                    <button className="btnDanger" onClick={() => setShowReset(true)}>Reset progress</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Date strip */}
+              <div className="card">
+                <div className="dateStrip" aria-label="Dates">
+                  {schedule.map(day => {
+                    const isToday = day.dateKey === todayKey;
+                    const isActive = day.dateKey === selectedDateKey;
+                    return (
+                      <button
+                        key={day.dateKey}
+                        className={"datePill " + (isActive ? "active " : "") + (isToday ? "today" : "")}
+                        onClick={() => setSelectedDateKey(day.dateKey)}
+                        title={formatLong(day.date)}
+                      >
+                        <span className="miniDot" aria-hidden="true"></span>
+                        {day.title}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Selected day box */}
+              <div className="card">
+                <div className="todayTitle">
+                  <h2>{formatLong(selectedDay.date)}</h2>
+                  {!selectedDay.note && (
+                    <div className="right">
+                      Topics completed: {dayDoneCount}/{dayItems.length}
+                    </div>
+                  )}
+                </div>
+                {renderDayBox()}
+              </div>
+
+              {/* Summary 3 boxes */}
+              <div className="summaryRow">
+                {["Ortho","Healthcare","Neurology"].map(k => (
+                  <div className="card summaryCard" key={k}>
+                    <div className="sumTop">
+                      <p className="sumTitle">
+                        {k === "Ortho" ? "Orthopedics" : (k === "Healthcare" ? "Healthcare" : "Neurology (Neuromedicine + Neurosurgery)")}
+                      </p>
+                      <div className="sumVal">{Math.round(summary[k].pct)}% • {summary[k].done}/{summary[k].total}</div>
+                    </div>
+                    <div className="sumBar" aria-hidden="true">
+                      <div className="sumFill" style={{width: summary[k].pct + "%", background: gradientFor(k)}}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Reset Modal */}
+              {showReset && (
+                <div className="modalOverlay" role="dialog" aria-modal="true">
+                  <div className="modal">
+                    <h3>Reset progress?</h3>
+                    <p>This clears all completed checkboxes saved in your browser (localStorage). Theme selection stays.</p>
+                    <div className="modalBtns">
+                      <button className="btn" onClick={() => setShowReset(false)}>Cancel</button>
+                      <button className="btn btnRed" onClick={resetProgress}>Yes, reset</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
