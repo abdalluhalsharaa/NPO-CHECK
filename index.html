@@ -19,8 +19,6 @@
     }
 
     /* ===== THEMES ===== */
-
-    /* Clouds (default) */
     [data-theme="clouds"]{
       --bgSolid: #f6fbff;
       --panel: rgba(255,255,255,.90);
@@ -30,7 +28,7 @@
       --muted: #51637d;
       --accent: #0ea5a4;
       --accent2:#2563eb;
-      --neuro: #7c3aed;         /* neuro accent */
+      --neuro: #7c3aed;
       --danger:#e11d48;
       --focus: 0 0 0 4px rgba(37,99,235,.18);
 
@@ -39,8 +37,6 @@
       --grad3: radial-gradient(900px 520px at 20% 115%, rgba(255,255,255,.92), transparent 60%);
       --grad4: radial-gradient(900px 520px at 90% 115%, rgba(255,255,255,.86), transparent 62%);
     }
-
-    /* Night */
     [data-theme="night"]{
       --bgSolid: #070c16;
       --panel: rgba(255,255,255,.06);
@@ -59,8 +55,6 @@
       --grad3: radial-gradient(700px 500px at 20% 110%, rgba(255,255,255,.06), transparent 60%);
       --grad4: radial-gradient(700px 500px at 90% 110%, rgba(255,255,255,.05), transparent 60%);
     }
-
-    /* Neon */
     [data-theme="neon"]{
       --bgSolid:#050412;
       --panel: rgba(255,255,255,.07);
@@ -79,12 +73,10 @@
       --grad3: radial-gradient(700px 500px at 20% 110%, rgba(56,189,248,.14), transparent 60%);
       --grad4: radial-gradient(700px 500px at 90% 110%, rgba(184,255,106,.10), transparent 60%);
     }
-
-    /* Army */
     [data-theme="army"]{
-      --bgSolid: #071006;
-      --panel: rgba(18, 26, 16, .88);
-      --panel2: rgba(12, 18, 10, .86);
+      --bgSolid: #061006;
+      --panel: rgba(18, 26, 16, .90);
+      --panel2: rgba(12, 18, 10, .88);
       --line: rgba(255,255,255,.10);
       --text: #f0f4ea;
       --muted: #b9c1ad;
@@ -94,9 +86,9 @@
       --danger:#ff5a7a;
       --focus: 0 0 0 4px rgba(154,230,110,.18);
 
-      --grad1: radial-gradient(1000px 560px at 15% -10%, rgba(154,230,110,.10), transparent 60%);
+      --grad1: radial-gradient(1000px 560px at 15% -10%, rgba(154,230,110,.12), transparent 60%);
       --grad2: radial-gradient(900px 500px at 92% 0%, rgba(212,175,55,.10), transparent 60%);
-      --grad3: radial-gradient(900px 520px at 20% 115%, rgba(255,255,255,.05), transparent 60%);
+      --grad3: radial-gradient(900px 520px at 20% 115%, rgba(255,255,255,.04), transparent 60%);
       --grad4: radial-gradient(900px 520px at 90% 115%, rgba(255,255,255,.03), transparent 62%);
     }
 
@@ -115,20 +107,22 @@
     body::before{
       content:"";
       position: fixed;
-      inset:0;
+      inset:-10%;
       z-index: -1;
       pointer-events:none;
       opacity: 0;
     }
     [data-theme="army"] body::before{
-      opacity: .75;
+      opacity: .95;
       background:
-        radial-gradient(400px 260px at 12% 30%, rgba(154,230,110,.18), transparent 60%),
-        radial-gradient(380px 260px at 72% 40%, rgba(212,175,55,.12), transparent 62%),
-        radial-gradient(420px 280px at 50% 75%, rgba(0,0,0,.18), transparent 60%),
-        repeating-linear-gradient(45deg, rgba(10,18,10,.35) 0 14px, rgba(23,40,18,.35) 14px 28px, rgba(60,90,45,.35) 28px 42px),
-        repeating-linear-gradient(-35deg, rgba(5,12,5,.22) 0 18px, rgba(80,110,60,.14) 18px 36px);
-      filter: contrast(1.05) saturate(1.1);
+        radial-gradient(460px 340px at 10% 25%, rgba(120,180,80,.35), transparent 62%),
+        radial-gradient(520px 380px at 30% 60%, rgba(40,75,35,.45), transparent 62%),
+        radial-gradient(520px 420px at 65% 30%, rgba(155,210,95,.22), transparent 62%),
+        radial-gradient(520px 380px at 82% 65%, rgba(15,30,12,.55), transparent 62%),
+        radial-gradient(420px 320px at 50% 88%, rgba(90,135,60,.32), transparent 62%),
+        repeating-linear-gradient(35deg, rgba(10,18,10,.55) 0 22px, rgba(32,52,26,.55) 22px 44px, rgba(80,120,60,.45) 44px 66px),
+        repeating-linear-gradient(-25deg, rgba(6,12,6,.35) 0 26px, rgba(120,170,85,.18) 26px 52px);
+      filter: contrast(1.15) saturate(1.25);
       mix-blend-mode: overlay;
     }
 
@@ -136,7 +130,7 @@
     .container{ width: min(1100px, 100%); display:flex; flex-direction:column; gap:14px; }
 
     .card{
-      border-radius: var(--radius);
+      border-radius: 18px;
       border:1px solid var(--line);
       background: linear-gradient(180deg, var(--panel), var(--panel2));
       box-shadow: var(--shadow2);
@@ -145,39 +139,36 @@
       position: relative;
     }
 
-    /* Neon rotating ring around day box */
+    /* Neon running border */
     .dayCard{ position: relative; }
     [data-theme="neon"] .dayCard::before{
       content:"";
       position:absolute;
       inset:-2px;
-      border-radius: calc(var(--radius) + 2px);
-      background: conic-gradient(from 0deg, rgba(184,255,106,.0), rgba(184,255,106,.55), rgba(124,58,237,.55), rgba(56,189,248,.55), rgba(184,255,106,.0));
-      filter: blur(10px);
+      border-radius: calc(18px + 2px);
+      padding: 2px;
+      background: conic-gradient(
+        from 0deg,
+        rgba(56,189,248,0) 0%,
+        rgba(56,189,248,.95) 12%,
+        rgba(184,255,106,.95) 25%,
+        rgba(124,58,237,.95) 40%,
+        rgba(56,189,248,.95) 60%,
+        rgba(184,255,106,.95) 75%,
+        rgba(56,189,248,0) 100%
+      );
+      animation: spin 2.6s linear infinite;
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events:none;
       opacity: .85;
-      z-index: 0;
-      animation: spin 2.8s linear infinite;
+      filter: blur(.3px);
     }
-    [data-theme="neon"] .dayCard::after{
-      content:"";
-      position:absolute;
-      inset: 1px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, var(--panel), var(--panel2));
-      z-index: 0;
-    }
-    [data-theme="neon"] .dayCard > *{ position: relative; z-index: 1; }
-
     @keyframes spin{ to{ transform: rotate(360deg);} }
 
-    /* Header layout */
-    .topRow{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:flex-start;
-    }
+    /* Header */
+    .topRow{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:flex-start; }
     .title{ font-weight: 950; letter-spacing:.2px; font-size: 18px; margin:0; display:flex; align-items:center; gap:10px; }
     .sub{ margin:6px 0 0; color: var(--muted); font-size: 13px; line-height:1.45; }
 
@@ -190,7 +181,7 @@
       border-radius: 14px;
       font-size: 13px;
       outline:none;
-      min-width: 210px;
+      min-width: 220px;
     }
     .select:focus{ box-shadow: var(--focus); }
 
@@ -202,70 +193,35 @@
       padding: 10px 12px;
       cursor:pointer;
       font-weight: 900;
-      transition: transform var(--t), filter var(--t);
+      transition: transform .18s ease, filter .18s ease;
       white-space:nowrap;
     }
     .btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
-    .btnDanger{
-      border-color: rgba(225,29,72,.35);
-      background: rgba(225,29,72,.10);
-    }
+    .btnDanger{ border-color: rgba(225,29,72,.35); background: rgba(225,29,72,.10); }
 
-    /* Countdown styles */
+    /* Countdown */
     .countdownRow{ display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; margin-top: 6px; }
     .examBlock{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
-
-    /* Primary vs secondary countdown blocks */
-    .primaryExam{
-      font-size: 22px;
-      font-weight: 1000;
-      letter-spacing:.2px;
-    }
-    .secondaryExam{
-      font-size: 16px;            /* a bit bigger than before */
-      font-weight: 950;
-      letter-spacing:.15px;
-    }
-
-    /* Neuro color different + slightly larger (but still secondary unless swapped on May31) */
+    .primaryExam{ font-size: 22px; font-weight: 1000; letter-spacing:.2px; }
+    .secondaryExam{ font-size: 16px; font-weight: 950; letter-spacing:.15px; }
     .neuroAccent{ color: var(--neuro); }
 
-    /* Neon blinking effect on countdown numbers */
     [data-theme="neon"] .blink{
       animation: blinkGlow 1.2s ease-in-out infinite;
       text-shadow: 0 0 14px rgba(56,189,248,.55), 0 0 26px rgba(184,255,106,.35);
     }
     @keyframes blinkGlow{
-      0%, 100%{ opacity: .65; filter: brightness(1); }
-      50%{ opacity: 1; filter: brightness(1.2); }
+      0%, 100%{ opacity: .65; }
+      50%{ opacity: 1; }
     }
 
-    .progressMeta{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top:10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
+    /* Progress */
+    .progressMeta{ display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px; color: var(--muted); font-size: 13px; }
     .progressMeta strong{ color: var(--text); font-weight: 1000; }
-    .bar{
-      margin-top:8px;
-      height: 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.12);
-      border:1px solid var(--line);
-      overflow:hidden;
-    }
-    .barFill{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, var(--accent2), var(--accent));
-      transition: width .55s ease;
-    }
+    .bar{ margin-top:8px; height: 10px; border-radius:999px; background: rgba(255,255,255,.12); border:1px solid var(--line); overflow:hidden; }
+    .barFill{ height:100%; width:0%; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .55s ease; }
 
+    /* Date strip */
     .dateStrip{ display:flex; gap:10px; overflow:auto; padding-bottom:2px; scrollbar-width: thin; }
     .datePill{
       flex: 0 0 auto;
@@ -277,7 +233,7 @@
       cursor:pointer;
       font-size: 12px;
       font-weight: 900;
-      transition: transform var(--t), border-color var(--t), background var(--t);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
       display:flex; align-items:center; gap:8px;
       user-select:none;
     }
@@ -287,32 +243,13 @@
     [data-theme="army"] .datePill.active{ background: rgba(154,230,110,.12); border-color: rgba(154,230,110,.35); }
     .miniDot{ width:8px; height:8px; border-radius:50%; background: var(--accent); }
 
-    .todayTitle{
-      display:flex;
-      justify-content:space-between;
-      align-items:baseline;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-bottom: 10px;
-    }
+    /* Day card */
+    .todayTitle{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:10px; margin-bottom: 10px; }
     .todayTitle h2{ margin:0; font-size: 16px; font-weight: 1000; }
-    .todayTitle .right{
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
-    }
+    .todayTitle .right{ color: var(--muted); font-size: 12px; font-weight: 900; font-variant-numeric: tabular-nums; }
 
     .subjectBlock{ padding: 10px 2px; }
-    .subjectName{
-      font-weight: 950;
-      font-size: 13px;
-      margin:0 0 10px 0;
-      letter-spacing: .2px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
+    .subjectName{ font-weight: 950; font-size: 13px; margin:0 0 10px 0; letter-spacing: .2px; }
     .divider{ border:0; border-top:1px solid var(--line); margin: 8px 0; opacity: .65; }
 
     .list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
@@ -325,7 +262,7 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      transition: transform var(--t), border-color var(--t), background var(--t);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
       position:relative;
       overflow:hidden;
     }
@@ -343,40 +280,18 @@
       align-items:center;
       justify-content:center;
       font-size: 18px;
-      transition: transform var(--t);
+      transition: transform .18s ease;
       flex: 0 0 auto;
     }
     .statusBtn:hover{ transform: translateY(-1px); }
 
-    .text{
-      font-weight: 900;
-      font-size: 13px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 58ch;
-    }
+    .text{ font-weight: 900; font-size: 13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 58ch; }
 
-    .item.done{
-      border-color: rgba(14,165,164,.45);
-      background: rgba(14,165,164,.10);
-    }
+    .item.done{ border-color: rgba(14,165,164,.45); background: rgba(14,165,164,.10); }
     [data-theme="night"] .item.done{ border-color: rgba(53,208,186,.45); background: rgba(53,208,186,.10); }
     [data-theme="neon"] .item.done{ border-color: rgba(184,255,106,.45); background: rgba(184,255,106,.10); }
     [data-theme="army"] .item.done{ border-color: rgba(154,230,110,.45); background: rgba(154,230,110,.10); }
     .item.done .text{ text-decoration: line-through; opacity:.75; }
-
-    .item::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background: linear-gradient(90deg, transparent, rgba(14,165,164,.18), transparent);
-      transform: translateX(-120%);
-      opacity:0;
-      transition: transform .55s ease, opacity .35s ease;
-      pointer-events:none;
-    }
-    .item.done::after{ transform: translateX(120%); opacity:1; }
 
     .rightControls{ display:flex; align-items:center; gap:10px; flex: 0 0 auto; }
     .moveSelect{
@@ -391,7 +306,7 @@
     }
     .moveSelect:focus{ box-shadow: var(--focus); }
 
-    /* Note (May 30) RTL inside */
+    /* Note (May 30) RTL */
     .note{
       border:1px solid var(--line);
       background: rgba(255,255,255,.06);
@@ -404,23 +319,9 @@
       text-align: right;
     }
 
-    /* Notes per day */
-    .notesBox{
-      margin-top: 12px;
-      border-top:1px solid var(--line);
-      padding-top: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .notesLabel{
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 950;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
+    /* Notes */
+    .notesBox{ margin-top: 12px; border-top:1px solid var(--line); padding-top: 12px; display:flex; flex-direction:column; gap:8px; }
+    .notesLabel{ font-size: 12px; color: var(--muted); font-weight: 950; display:flex; align-items:center; gap:8px; }
     .notesArea{
       width:100%;
       min-height: 90px;
@@ -435,23 +336,6 @@
       line-height: 1.5;
     }
     .notesArea:focus{ box-shadow: var(--focus); }
-
-    /* Summary cards */
-    .summaryRow{ display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; }
-    .summaryCard{ grid-column: span 4; padding:12px; }
-    @media (max-width: 880px){ .summaryCard{ grid-column: span 12; } }
-    .sumTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
-    .sumTitle{ margin:0; color: var(--muted); font-size: 12px; font-weight: 1000; }
-    .sumVal{ font-weight: 1000; font-size: 13px; font-variant-numeric: tabular-nums; }
-    .sumBar{
-      margin-top:8px;
-      height: 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.12);
-      overflow:hidden;
-    }
-    .sumFill{ height:100%; width:0%; transition: width .55s ease; }
 
     /* Toast (Undo) */
     .toast{
@@ -468,30 +352,12 @@
       display:flex;
       gap:12px;
       align-items:center;
-      max-width: min(520px, calc(100vw - 36px));
+      max-width: min(560px, calc(100vw - 36px));
       animation: toastIn .22s ease;
     }
-    @keyframes toastIn{
-      from{ transform: translateY(10px); opacity: 0; }
-      to{ transform: translateY(0); opacity: 1; }
-    }
-    .toastMsg{
-      font-size: 13px;
-      color: var(--text);
-      font-weight: 900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .toastBtn{
-      border-radius: 999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.08);
-      color: var(--text);
-      padding: 8px 10px;
-      cursor:pointer;
-      font-weight: 950;
-    }
+    @keyframes toastIn{ from{ transform: translateY(10px); opacity: 0; } to{ transform: translateY(0); opacity: 1; } }
+    .toastMsg{ font-size: 13px; color: var(--text); font-weight: 900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .toastBtn{ border-radius: 999px; border:1px solid var(--line); background: rgba(255,255,255,.08); color: var(--text); padding: 8px 10px; cursor:pointer; font-weight: 950; }
 
     /* Confetti */
     .confettiWrap{ pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index: 9998; }
@@ -532,39 +398,31 @@
     [data-theme="night"] .celebrateBanner,
     [data-theme="neon"] .celebrateBanner,
     [data-theme="army"] .celebrateBanner{ background: rgba(255,255,255,.10); color: var(--text); }
-    @keyframes pop{
-      0%{ transform: translateX(-50%) translateY(-10px) scale(.98); opacity:0; }
-      100%{ transform: translateX(-50%) translateY(0) scale(1); opacity:1; }
-    }
-    @keyframes fadeOut{
-      0%{ opacity:1; }
-      75%{ opacity:1; }
-      100%{ opacity:0; }
-    }
+    @keyframes pop{ 0%{ transform: translateX(-50%) translateY(-10px) scale(.98); opacity:0; } 100%{ transform: translateX(-50%) translateY(0) scale(1); opacity:1; } }
+    @keyframes fadeOut{ 0%{ opacity:1; } 75%{ opacity:1; } 100%{ opacity:0; } }
 
-    /* Stars overlay (Clouds theme) */
-    .skyEmojis{
+    /* Clouds moving background icons */
+    .cloudLayer{
       position: fixed;
       inset:0;
       z-index: -1;
       pointer-events:none;
       overflow:hidden;
-      opacity: .55;
       display:none;
     }
-    [data-theme="clouds"] .skyEmojis{ display:block; }
-    .skyEmojis span{
+    [data-theme="clouds"] .cloudLayer{ display:block; }
+    .cloudLayer span{
       position:absolute;
-      font-size: 20px;
-      filter: drop-shadow(0 8px 14px rgba(0,0,0,.12));
-      animation: drift 16s linear infinite;
-      transform: translateX(-10vw);
-      opacity: .85;
+      left: -25vw;
+      filter: drop-shadow(0 14px 22px rgba(0,0,0,.12));
+      animation: cloudDrift linear infinite;
+      opacity: .55;
+      white-space:nowrap;
     }
-    @keyframes drift{
-      0%{ transform: translateX(-12vw) translateY(0px) rotate(0deg); opacity: .0; }
-      10%{ opacity: .85; }
-      100%{ transform: translateX(112vw) translateY(-22px) rotate(18deg); opacity: .0; }
+    @keyframes cloudDrift{
+      0%{ transform: translateX(-30vw) translateY(0px); opacity: 0; }
+      10%{ opacity: .65; }
+      100%{ transform: translateX(130vw) translateY(-28px); opacity: 0; }
     }
   </style>
 </head>
@@ -575,9 +433,9 @@
   <script type="text/babel">
     const {useEffect, useMemo, useRef, useState} = React;
 
-    const STORAGE_KEY = "medicalChecklist.v8";
+    const STORAGE_KEY = "medicalChecklist.v10";
     const THEMES = {
-      clouds: "Clouds (Stars 💫🌍🪐)",
+      clouds: "Clouds",
       night: "Night Shift",
       neon: "Neon Pulse",
       army: "Army Mode"
@@ -682,17 +540,17 @@
       lectures.push(L(isoKey(d(4,28)), "Neurosurgery", "CNS tumors", 0));
       lectures.push(L(isoKey(d(4,28)), "Healthcare", "Laboratory interpretation", 0));
 
-      // 29 (no Infective here)
+      // 29
       ["Arthritis in hip & knee","SCFE","DDH","Genu varus and valgus","Lower limb"]
         .forEach((t,i)=>lectures.push(L(isoKey(d(4,29)), "Ortho", t, i)));
       lectures.push(L(isoKey(d(4,29)), "Healthcare", "Difficult patient", 0));
 
-      // 31 (Infective moved here)
+      // 31
       lectures.push(L(isoKey(d(4,31)), "Neuromedicine", "Infective neurological diseases", 0));
       lectures.push(L(isoKey(d(4,31)), "Neurosurgery", "Spinal injuries", 0));
       lectures.push(L(isoKey(d(4,31)), "Neurosurgery", "Congenital anomalies", 1));
 
-      // 1 June (Headache moved here)
+      // 1 June
       lectures.push(L(isoKey(d(5,1)), "Neuromedicine", "Headache", 0));
       lectures.push(L(isoKey(d(5,1)), "Neurosurgery", "Head injuries", 0));
       lectures.push(L(isoKey(d(5,1)), "Neurosurgery", "Introduction to SAH", 1));
@@ -727,11 +585,52 @@
       return pieces;
     }
 
-    function statusEmoji(theme, done){
-      if(theme === "clouds") return done ? "✨" : "⭐️";
-      if(theme === "army") return done ? "💣" : "🪖";
-      if(theme === "neon") return done ? "◆" : "◇";
-      return done ? "✅" : "⬜";
+    // Done ALWAYS ✅
+    function notDoneIcon(theme, subject){
+      if(theme === "army") return "💣";
+      if(theme === "clouds"){
+        if(subject === "Ortho") return "💫";
+        if(subject === "Neuromedicine") return "🌍";
+        if(subject === "Neurosurgery") return "🪐";
+        if(subject === "Healthcare") return "☄️";
+        return "💫";
+      }
+      if(theme === "neon") return "◇";
+      return "⬜";
+    }
+    function statusIcon(theme, subject, done){
+      return done ? "✅" : notDoneIcon(theme, subject);
+    }
+
+    // Download helper
+    function downloadText(filename, text, mime="application/json"){
+      const blob = new Blob([text], {type: mime});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 1000);
+    }
+
+    // Print-to-PDF helper (opens print dialog)
+    function openPrintWindow(html){
+      const w = window.open("", "_blank");
+      if(!w) return;
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      setTimeout(()=>w.print(), 400);
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;");
     }
 
     function App(){
@@ -740,7 +639,7 @@
 
       const [theme, setTheme] = useState("clouds");
       const [completed, setCompleted] = useState(()=>new Set());
-      const [moveMap, setMoveMap] = useState(()=>({})); // lectureId -> dateKey
+      const [moveMap, setMoveMap] = useState(()=>({}));
       const [selectedDateKey, setSelectedDateKey] = useState(base.days[0].dateKey);
       const [notes, setNotes] = useState(()=> ({}));
 
@@ -752,6 +651,8 @@
       const celebratedRef = useRef({});
 
       const todayKey = useMemo(()=>isoKey(new Date()), []);
+
+      const importInputRef = useRef(null);
 
       function currentDateFor(lecture){
         const mapped = moveMap[lecture.lectureId];
@@ -795,7 +696,7 @@
         const g = grouped[selectedDateKey];
         if(!g) return [];
         const flat = [];
-        SUBJECTS_ORDER.forEach(s=>flat.push(...g[s]));
+        ["Ortho","Neuromedicine","Neurosurgery","Healthcare"].forEach(s=>flat.push(...g[s]));
         return flat;
       }, [grouped, selectedDateKey]);
 
@@ -814,9 +715,8 @@
       }, [selectedLectures, completed]);
 
       // Exams
-      const examOrthoHealth = useMemo(()=>new Date(year, 4, 31), [year]); // May 31
-      const examNeuro = useMemo(()=>new Date(year, 5, 2), [year]);        // June 2
-
+      const examOrthoHealth = useMemo(()=>new Date(year, 4, 31), [year]);
+      const examNeuro = useMemo(()=>new Date(year, 5, 2), [year]);
       const daysToOrthoHealth = useMemo(()=>daysDiff(new Date(), examOrthoHealth), [examOrthoHealth]);
       const daysToNeuro = useMemo(()=>daysDiff(new Date(), examNeuro), [examNeuro]);
 
@@ -828,13 +728,12 @@
         daysToNeuro > 0 ? `${daysToNeuro} day${daysToNeuro===1?"":"s"} left` :
         daysToNeuro === 0 ? `Exam day` : `${Math.abs(daysToNeuro)} day${Math.abs(daysToNeuro)===1?"":"s"} ago`;
 
-      // Swap emphasis on May 31 (Ortho exam day): Neuro becomes primary
       const isOrthoExamDay = useMemo(()=>{
         const now = startOfDay(new Date()).getTime();
         return now === startOfDay(examOrthoHealth).getTime();
       }, [examOrthoHealth]);
 
-      // Celebrate (ignore note day)
+      // Celebrate
       useEffect(()=>{
         if(selectedDay.note) return;
         if(selectedLectures.length === 0) return;
@@ -881,49 +780,130 @@
         setLastMove(null);
       }
 
+      // ✅ FIXED: Notes now writable
       function updateNote(dateKey, value){
-        setNotes(prev=>({ ...prev, value }));
+        setNotes(prev => ({ ...prev, value }));
       }
 
-      // Stars overlay positions (clouds theme)
-      const sky = useMemo(()=>{
-        const emojis = ["✨","🌟","⭐️","🪐","☄️"];
+      // Export JSON
+      function exportJSON(){
+        const payload = {
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          theme,
+          completedIds: Array.from(completed),
+          moveMap,
+          notes
+        };
+        const stamp = new Date().toISOString().slice(0,10);
+        downloadText(`medical-checklist-backup-${stamp}.json`, JSON.stringify(payload, null, 2), "application/json");
+      }
+
+      function triggerImport(){
+        importInputRef.current?.click();
+      }
+
+      async function importJSONFile(file){
+        const text = await file.text();
+        let obj;
+        try{ obj = JSON.parse(text); }catch{ alert("Invalid JSON file."); return; }
+        if(!obj || typeof obj !== "object"){ alert("Invalid JSON structure."); return; }
+
+        // soft validation
+        if(Array.isArray(obj.completedIds)) setCompleted(new Set(obj.completedIds));
+        if(obj.moveMap && typeof obj.moveMap === "object") setMoveMap(obj.moveMap);
+        if(obj.notes && typeof obj.notes === "object") setNotes(obj.notes);
+        if(typeof obj.theme === "string") setTheme(obj.theme);
+
+        // allow celebrations again if needed
+        celebratedRef.current = {};
+        alert("Import completed ✅");
+      }
+
+      function onImportChange(e){
+        const file = e.target.files && e.target.files[0];
+        if(!file) return;
+        importJSONFile(file);
+        e.target.value = "";
+      }
+
+      // Notes PDF (Selected / All)
+      function exportNotesPDF(mode="selected"){
+        const dayList = (mode === "all") ? base.days : [selectedDay];
+
+        const rows = dayList.map(d=>{
+          const n = notes[d.dateKey] || "";
+          if(!n.trim()) return "";
+          return `
+            <div class="page">
+              <h2>${escapeHtml(d.title)} — ${escapeHtml(d.date.toDateString())}</h2>
+              <div class="note" dir="auto">${escapeHtml(n)}</div>
+            </div>
+          `;
+        }).filter(Boolean).join("");
+
+        const html = `
+          <!doctype html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Notes PDF</title>
+            <style>
+              body{ font-family: Arial, sans-serif; margin: 26px; color:#111; }
+              h1{ margin:0 0 12px 0; }
+              h2{ margin: 0 0 10px 0; font-size: 16px; }
+              .note{
+                border: 1px solid #ddd;
+                padding: 12px;
+                border-radius: 10px;
+                white-space: pre-wrap;
+                line-height: 1.7;
+                font-size: 13px;
+              }
+              .page{ margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px dashed #ddd; }
+              .toolbar{ margin-bottom: 14px; display:flex; gap:10px; }
+              button{
+                padding: 10px 12px;
+                border-radius: 10px;
+                border: 1px solid #ddd;
+                background: #f7f7f7;
+                cursor:pointer;
+                font-weight: 700;
+              }
+              @media print{
+                .toolbar{ display:none; }
+                .page{ break-inside: avoid; page-break-inside: avoid; }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="toolbar">
+              <button onclick="window.print()">Save as PDF</button>
+              <button onclick="window.close()">Close</button>
+            </div>
+            <h1>Medical Checklist — Notes</h1>
+            ${rows || "<p>No notes found.</p>"}
+          </body>
+          </html>
+        `;
+        openPrintWindow(html);
+      }
+
+      // Clouds moving background items
+      const clouds = useMemo(()=>{
+        const emojis = ["☁️","☀️","🌧️","🌨️","🌙"];
         const items = [];
-        for(let i=0;i<18;i++){
+        for(let i=0;i<14;i++){
           const em = emojis[Math.floor(Math.random()*emojis.length)];
-          const top = Math.random()*90;
-          const delay = Math.random()*8;
-          const dur = 12 + Math.random()*10;
-          items.push({id:i, em, top, delay, dur});
+          const top = Math.random()*88;
+          const size = 44 + Math.random()*86;
+          const delay = Math.random()*12;
+          const dur = 22 + Math.random()*22;
+          const op = 0.25 + Math.random()*0.35;
+          items.push({id:i, em, top, size, delay, dur, op});
         }
         return items;
       }, []);
-
-      const summary = useMemo(()=>{
-        const sums = { Ortho:{total:0,done:0}, Healthcare:{total:0,done:0}, Neurology:{total:0,done:0} };
-        base.lectures.forEach(L=>{
-          const bucket = (L.subject==="Neuromedicine" || L.subject==="Neurosurgery") ? "Neurology" : L.subject;
-          sums[bucket].total += 1;
-          if(completed.has(L.lectureId)) sums[bucket].done += 1;
-        });
-        const pct = (x)=>clampPct((x.done/(x.total||1))*100);
-        return {
-          Ortho:{...sums.Ortho, pct: pct(sums.Ortho)},
-          Healthcare:{...sums.Healthcare, pct: pct(sums.Healthcare)},
-          Neurology:{...sums.Neurology, pct: pct(sums.Neurology)}
-        };
-      }, [base.lectures, completed]);
-
-      function gradientFor(key){
-        if(theme==="army"){
-          if(key==="Ortho") return "linear-gradient(90deg, #d4af37, #9ae66e)";
-          if(key==="Healthcare") return "linear-gradient(90deg, #9ae66e, #d4af37)";
-          return "linear-gradient(90deg, #7dd3fc, rgba(255,255,255,.25))";
-        }
-        if(key==="Ortho") return "linear-gradient(90deg, #38bdf8, var(--accent))";
-        if(key==="Healthcare") return "linear-gradient(90deg, #fb7185, var(--accent2))";
-        return "linear-gradient(90deg, var(--accent2), var(--accent))";
-      }
 
       function renderDayBox(){
         const dayGroup = grouped[selectedDateKey];
@@ -960,7 +940,7 @@
                     <li className={"item " + (isDone ? "done" : "")} key={L.lectureId}>
                       <div className="leftRow">
                         <button className="statusBtn" onClick={()=>toggleLecture(L.lectureId)} aria-pressed={isDone}>
-                          {statusEmoji(theme, isDone)}
+                          {statusIcon(theme, L.subject, isDone)}
                         </button>
                         <div className="text" title={L.text}>{L.text}</div>
                       </div>
@@ -1001,19 +981,25 @@
         );
       }
 
-      const primaryClass = theme==="neon" ? "blink" : "";
-      const neuroBlink = theme==="neon" ? "blink" : "";
+      const blinkClass = theme==="neon" ? "blink" : "";
 
       return (
         <>
-          {/* Stars overlay in clouds theme */}
+          {/* Clouds moving background layer */}
           {theme === "clouds" && (
-            <div className="skyEmojis" aria-hidden="true">
-              {sky.map(s=>(
-                <span key={s.id}
-                  style={{ top: s.top + "vh", left: (-10) + "vw", animationDelay: s.delay + "s", animationDuration: s.dur + "s" }}
+            <div className="cloudLayer" aria-hidden="true">
+              {clouds.map(c=>(
+                <span
+                  key={c.id}
+                  style={{
+                    top: c.top + "vh",
+                    fontSize: c.size + "px",
+                    animationDelay: c.delay + "s",
+                    animationDuration: c.dur + "s",
+                    opacity: c.op
+                  }}
                 >
-                  {s.em}
+                  {c.em}
                 </span>
               ))}
             </div>
@@ -1056,28 +1042,27 @@
                     <h1 className="title">🩺 Medical Checklist</h1>
                     <p className="sub">Study plan • auto-saves locally • move lectures between days</p>
 
-                    {/* Countdown with dynamic emphasis */}
                     <div className="countdownRow">
                       {!isOrthoExamDay ? (
                         <>
                           <div className="examBlock primaryExam">
                             Ortho + Healthcare exam:
-                            <span className={primaryClass} style={{color:"var(--accent2)"}}>{orthoLabel}</span>
+                            <span className={blinkClass} style={{color:"var(--accent2)"}}>{orthoLabel}</span>
                           </div>
                           <div className="examBlock secondaryExam">
                             Neuromedicine exam:
-                            <span className={"neuroAccent " + neuroBlink}>{neuroLabel}</span>
+                            <span className={"neuroAccent " + blinkClass}>{neuroLabel}</span>
                           </div>
                         </>
                       ) : (
                         <>
                           <div className="examBlock primaryExam">
                             Neuromedicine exam:
-                            <span className={"neuroAccent " + neuroBlink}>{neuroLabel}</span>
+                            <span className={"neuroAccent " + blinkClass}>{neuroLabel}</span>
                           </div>
                           <div className="examBlock secondaryExam">
                             Ortho + Healthcare exam:
-                            <span className={primaryClass} style={{color:"var(--muted)"}}>{orthoLabel}</span>
+                            <span className={blinkClass} style={{color:"var(--muted)"}}>{orthoLabel}</span>
                           </div>
                         </>
                       )}
@@ -1087,7 +1072,6 @@
                       <div>Progress: <strong>{Math.round(overallPct)}%</strong> (out of 100)</div>
                       <div>Lectures completed: <strong>{doneCount}/{TOTAL_LECTURES}</strong></div>
                     </div>
-
                     <div className="bar" aria-label="Overall progress bar">
                       <div className="barFill" style={{width: overallPct + "%"}}></div>
                     </div>
@@ -1100,8 +1084,16 @@
                       <option value="neon">{THEMES.neon}</option>
                       <option value="army">{THEMES.army}</option>
                     </select>
+
+                    <button className="btn" onClick={exportJSON}>Export JSON</button>
+
+                    <input ref={importInputRef} type="file" accept="application/json" style={{display:"none"}} onChange={onImportChange} />
+                    <button className="btn" onClick={triggerImport}>Import JSON</button>
+
+                    <button className="btn" onClick={()=>exportNotesPDF("selected")}>Notes PDF (Selected)</button>
+                    <button className="btn" onClick={()=>exportNotesPDF("all")}>Notes PDF (All)</button>
+
                     <button className="btn btnDanger" onClick={()=>{
-                      // keep notes, reset progress + moves
                       setCompleted(new Set());
                       setMoveMap({});
                       celebratedRef.current = {};
@@ -1141,23 +1133,6 @@
                   )}
                 </div>
                 {renderDayBox()}
-              </div>
-
-              {/* Summary 3 boxes */}
-              <div className="summaryRow">
-                {["Ortho","Healthcare","Neurology"].map(k => (
-                  <div className="card summaryCard" key={k}>
-                    <div className="sumTop">
-                      <p className="sumTitle">
-                        {k === "Ortho" ? "Orthopedics" : (k === "Healthcare" ? "Healthcare" : "Neurology (Neuromedicine + Neurosurgery)")}
-                      </p>
-                      <div className="sumVal">{Math.round(summary[k].pct)}% • {summary[k].done}/{summary[k].total}</div>
-                    </div>
-                    <div className="sumBar" aria-hidden="true">
-                      <div className="sumFill" style={{width: summary[k].pct + "%", background: gradientFor(k)}}></div>
-                    </div>
-                  </div>
-                ))}
               </div>
 
             </div>
