@@ -437,6 +437,45 @@
     [data-theme="army"] .celebrateBanner{ background: rgba(255,255,255,.10); color: var(--text); }
     @keyframes pop{ 0%{ transform: translateX(-50%) translateY(-10px) scale(.98); opacity:0; } 100%{ transform: translateX(-50%) translateY(0) scale(1); opacity:1; } }
     @keyframes fadeOut{ 0%{ opacity:1; } 75%{ opacity:1; } 100%{ opacity:0; } }
+
+    /* ===== Reset Confirmation Modal (Added) ===== */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 10000;
+    }
+    .modalCard{
+      width: min(520px, 96vw);
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow: var(--shadow);
+      padding: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .modalTitle{
+      margin:0;
+      font-size:16px;
+      font-weight:1000;
+    }
+    .modalText{
+      margin:8px 0 0;
+      color: var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+    .modalBtns{
+      margin-top: 14px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
   </style>
 </head>
 
@@ -645,6 +684,9 @@
       const [selectedDateKey, setSelectedDateKey] = useState(base.days[0].dateKey);
       const [notes, setNotes] = useState(()=> ({}));
 
+      // ✅ Added: modal state for Reset confirmation
+      const [showResetModal, setShowResetModal] = useState(false);
+
       const [lastMove, setLastMove] = useState(null);
       const undoTimer = useRef(null);
 
@@ -782,7 +824,7 @@
 
       /* ✅ FIXED NOTES: now writes to notes[dateKey] */
       function updateNote(dateKey, value){
-        setNotes(prev => ({ ...prev, value }));
+        setNotes(prev => ({ ...prev, [dateKey]: value }));
       }
 
       // Export JSON
@@ -1146,11 +1188,10 @@
                     <button className="btn" onClick={()=>exportNotesPDF("selected")}>Notes PDF (Selected)</button>
                     <button className="btn" onClick={()=>exportNotesPDF("all")}>Notes PDF (All)</button>
 
-                    <button className="btn btnDanger" onClick={()=>{
-                      setCompleted(new Set());
-                      setMoveMap({});
-                      celebratedRef.current = {};
-                    }}>Reset progress</button>
+                    <!-- ✅ Changed: open confirmation modal instead of immediate reset -->
+                    <button className="btn btnDanger" onClick={()=>setShowResetModal(true)}>
+                      Reset progress
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1205,11 +1246,13 @@
 
             </div>
           </div>
-        </>
-      );
-    }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-  </script>
-</body>
-</html>
+          {/* ✅ Added: Reset Confirmation Modal */}
+          {showResetModal && (
+            <div className="modalOverlay" role="dialog" aria-modal="true">
+              <div className="modalCard">
+                <h3 className="modalTitle">Reset progress?</h3>
+                <p className="modalText">
+                  This will clear <b>completed checkmarks</b> and <b>moved lectures</b> from this browser.
+                  <br />
+                  <b>Notes will stay
