@@ -130,7 +130,7 @@
     .container{ width: min(1100px, 100%); display:flex; flex-direction:column; gap:14px; }
 
     .card{
-      border-radius: 18px;
+      border-radius: var(--radius);
       border:1px solid var(--line);
       background: linear-gradient(180deg, var(--panel), var(--panel2));
       box-shadow: var(--shadow2);
@@ -139,33 +139,37 @@
       position: relative;
     }
 
-    /* Neon running border */
+    /* ✅ Neon runner line around edges (NOT a rotating border feel) */
     .dayCard{ position: relative; }
     [data-theme="neon"] .dayCard::before{
       content:"";
       position:absolute;
       inset:-2px;
-      border-radius: calc(18px + 2px);
+      border-radius: calc(var(--radius) + 2px);
       padding: 2px;
-      background: conic-gradient(
-        from 0deg,
-        rgba(56,189,248,0) 0%,
-        rgba(56,189,248,.95) 12%,
-        rgba(184,255,106,.95) 25%,
-        rgba(124,58,237,.95) 40%,
-        rgba(56,189,248,.95) 60%,
-        rgba(184,255,106,.95) 75%,
-        rgba(56,189,248,0) 100%
-      );
-      animation: spin 2.6s linear infinite;
+      background:
+        conic-gradient(
+          from var(--a, 0deg),
+          rgba(56,189,248,0) 0%,
+          rgba(56,189,248,0) 72%,
+          rgba(56,189,248,.95) 78%,
+          rgba(184,255,106,.95) 82%,
+          rgba(124,58,237,.95) 86%,
+          rgba(56,189,248,0) 92%,
+          rgba(56,189,248,0) 100%
+        );
+      /* show only border */
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       pointer-events:none;
-      opacity: .85;
-      filter: blur(.3px);
+      filter: blur(.2px);
+      opacity: .9;
+      animation: runner 1.8s linear infinite;
     }
-    @keyframes spin{ to{ transform: rotate(360deg);} }
+    @keyframes runner{
+      to{ --a: 360deg; }
+    }
 
     /* Header */
     .topRow{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:flex-start; }
@@ -193,7 +197,7 @@
       padding: 10px 12px;
       cursor:pointer;
       font-weight: 900;
-      transition: transform .18s ease, filter .18s ease;
+      transition: transform var(--t), filter var(--t);
       white-space:nowrap;
     }
     .btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
@@ -233,7 +237,7 @@
       cursor:pointer;
       font-size: 12px;
       font-weight: 900;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      transition: transform var(--t), border-color var(--t), background var(--t);
       display:flex; align-items:center; gap:8px;
       user-select:none;
     }
@@ -262,7 +266,7 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      transition: transform var(--t), border-color var(--t), background var(--t);
       position:relative;
       overflow:hidden;
     }
@@ -280,11 +284,10 @@
       align-items:center;
       justify-content:center;
       font-size: 18px;
-      transition: transform .18s ease;
+      transition: transform var(--t);
       flex: 0 0 auto;
     }
     .statusBtn:hover{ transform: translateY(-1px); }
-
     .text{ font-weight: 900; font-size: 13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 58ch; }
 
     .item.done{ border-color: rgba(14,165,164,.45); background: rgba(14,165,164,.10); }
@@ -306,7 +309,7 @@
     }
     .moveSelect:focus{ box-shadow: var(--focus); }
 
-    /* Note (May 30) RTL */
+    /* Note day */
     .note{
       border:1px solid var(--line);
       background: rgba(255,255,255,.06);
@@ -337,7 +340,17 @@
     }
     .notesArea:focus{ box-shadow: var(--focus); }
 
-    /* Toast (Undo) */
+    /* ✅ Summary progress cards (restored) */
+    .summaryRow{ display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; }
+    .summaryCard{ grid-column: span 4; padding:12px; }
+    @media (max-width: 880px){ .summaryCard{ grid-column: span 12; } }
+    .sumTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .sumTitle{ margin:0; color: var(--muted); font-size: 12px; font-weight: 1000; }
+    .sumVal{ font-weight: 1000; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .sumBar{ margin-top:8px; height: 8px; border-radius:999px; border:1px solid var(--line); background: rgba(255,255,255,.12); overflow:hidden; }
+    .sumFill{ height:100%; width:0%; transition: width .55s ease; }
+
+    /* Toast Undo */
     .toast{
       position: fixed;
       left: 18px;
@@ -359,7 +372,31 @@
     .toastMsg{ font-size: 13px; color: var(--text); font-weight: 900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .toastBtn{ border-radius: 999px; border:1px solid var(--line); background: rgba(255,255,255,.08); color: var(--text); padding: 8px 10px; cursor:pointer; font-weight: 950; }
 
-    /* Confetti */
+    /* Clouds moving background icons */
+    .cloudLayer{
+      position: fixed;
+      inset:0;
+      z-index: -1;
+      pointer-events:none;
+      overflow:hidden;
+      display:none;
+    }
+    [data-theme="clouds"] .cloudLayer{ display:block; }
+    .cloudLayer span{
+      position:absolute;
+      left: -25vw;
+      filter: drop-shadow(0 14px 22px rgba(0,0,0,.12));
+      animation: cloudDrift linear infinite;
+      opacity: .55;
+      white-space:nowrap;
+    }
+    @keyframes cloudDrift{
+      0%{ transform: translateX(-30vw) translateY(0px); opacity: 0; }
+      10%{ opacity: .65; }
+      100%{ transform: translateX(130vw) translateY(-28px); opacity: 0; }
+    }
+
+    /* Confetti + banner (kept) */
     .confettiWrap{ pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index: 9998; }
     .confettiPiece{
       position:absolute;
@@ -400,30 +437,6 @@
     [data-theme="army"] .celebrateBanner{ background: rgba(255,255,255,.10); color: var(--text); }
     @keyframes pop{ 0%{ transform: translateX(-50%) translateY(-10px) scale(.98); opacity:0; } 100%{ transform: translateX(-50%) translateY(0) scale(1); opacity:1; } }
     @keyframes fadeOut{ 0%{ opacity:1; } 75%{ opacity:1; } 100%{ opacity:0; } }
-
-    /* Clouds moving background icons */
-    .cloudLayer{
-      position: fixed;
-      inset:0;
-      z-index: -1;
-      pointer-events:none;
-      overflow:hidden;
-      display:none;
-    }
-    [data-theme="clouds"] .cloudLayer{ display:block; }
-    .cloudLayer span{
-      position:absolute;
-      left: -25vw;
-      filter: drop-shadow(0 14px 22px rgba(0,0,0,.12));
-      animation: cloudDrift linear infinite;
-      opacity: .55;
-      white-space:nowrap;
-    }
-    @keyframes cloudDrift{
-      0%{ transform: translateX(-30vw) translateY(0px); opacity: 0; }
-      10%{ opacity: .65; }
-      100%{ transform: translateX(130vw) translateY(-28px); opacity: 0; }
-    }
   </style>
 </head>
 
@@ -433,7 +446,7 @@
   <script type="text/babel">
     const {useEffect, useMemo, useRef, useState} = React;
 
-    const STORAGE_KEY = "medicalChecklist.v10";
+    const STORAGE_KEY = "medicalChecklist.v11";
     const THEMES = {
       clouds: "Clouds",
       night: "Night Shift",
@@ -492,24 +505,20 @@
 
       const lectures = [];
 
-      // 22
       lectures.push(L(isoKey(d(4,22)), "Ortho", "Principles of fractures", 0));
       lectures.push(L(isoKey(d(4,22)), "Neuromedicine", "Medical neurology", 0));
       lectures.push(L(isoKey(d(4,22)), "Healthcare", "Evidence based medicine", 0));
 
-      // 23
       lectures.push(L(isoKey(d(4,23)), "Ortho", "Peripheral nerve injuries", 0));
       lectures.push(L(isoKey(d(4,23)), "Ortho", "X-ray", 1));
       lectures.push(L(isoKey(d(4,23)), "Neuromedicine", "CVA", 0));
       lectures.push(L(isoKey(d(4,23)), "Healthcare", "Communication skills", 0));
 
-      // 24
       lectures.push(L(isoKey(d(4,24)), "Ortho", "Overview of Spine Anatomy", 0));
       lectures.push(L(isoKey(d(4,24)), "Ortho", "Scoliosis & kyphosis", 1));
       lectures.push(L(isoKey(d(4,24)), "Neuromedicine", "Peripheral nervous", 0));
       lectures.push(L(isoKey(d(4,24)), "Healthcare", "Dr.Pt relationship", 0));
 
-      // 25
       [
         "Spondylosis & spondylolisthesis",
         "Spina bifida and torticollis",
@@ -520,19 +529,16 @@
       lectures.push(L(isoKey(d(4,25)), "Neuromedicine", "Movement disorders", 0));
       lectures.push(L(isoKey(d(4,25)), "Healthcare", "The Diagnostic process", 0));
 
-      // 26
       lectures.push(L(isoKey(d(4,26)), "Ortho", "Bone tumor x ray", 0));
       lectures.push(L(isoKey(d(4,26)), "Ortho", "Musculoskeletal", 1));
       lectures.push(L(isoKey(d(4,26)), "Neuromedicine", "Multiple sclerosis", 0));
       lectures.push(L(isoKey(d(4,26)), "Neurosurgery", "Back pain", 0));
       lectures.push(L(isoKey(d(4,26)), "Healthcare", "Breaking bad news", 0));
 
-      // 27
       lectures.push(L(isoKey(d(4,27)), "Ortho", "Upper limb (first half)", 0));
       lectures.push(L(isoKey(d(4,27)), "Neuromedicine", "Dementia", 0));
       lectures.push(L(isoKey(d(4,27)), "Healthcare", "Counselling", 0));
 
-      // 28
       lectures.push(L(isoKey(d(4,28)), "Ortho", "Upper limb (second half)", 0));
       lectures.push(L(isoKey(d(4,28)), "Ortho", "Pediatric foot", 1));
       lectures.push(L(isoKey(d(4,28)), "Ortho", "Legg Calve Perthes disease", 2));
@@ -540,17 +546,14 @@
       lectures.push(L(isoKey(d(4,28)), "Neurosurgery", "CNS tumors", 0));
       lectures.push(L(isoKey(d(4,28)), "Healthcare", "Laboratory interpretation", 0));
 
-      // 29
       ["Arthritis in hip & knee","SCFE","DDH","Genu varus and valgus","Lower limb"]
         .forEach((t,i)=>lectures.push(L(isoKey(d(4,29)), "Ortho", t, i)));
       lectures.push(L(isoKey(d(4,29)), "Healthcare", "Difficult patient", 0));
 
-      // 31
       lectures.push(L(isoKey(d(4,31)), "Neuromedicine", "Infective neurological diseases", 0));
       lectures.push(L(isoKey(d(4,31)), "Neurosurgery", "Spinal injuries", 0));
       lectures.push(L(isoKey(d(4,31)), "Neurosurgery", "Congenital anomalies", 1));
 
-      // 1 June
       lectures.push(L(isoKey(d(5,1)), "Neuromedicine", "Headache", 0));
       lectures.push(L(isoKey(d(5,1)), "Neurosurgery", "Head injuries", 0));
       lectures.push(L(isoKey(d(5,1)), "Neurosurgery", "Introduction to SAH", 1));
@@ -585,7 +588,7 @@
       return pieces;
     }
 
-    // Done ALWAYS ✅
+    // ✅ Done ALWAYS ✅
     function notDoneIcon(theme, subject){
       if(theme === "army") return "💣";
       if(theme === "clouds"){
@@ -602,7 +605,7 @@
       return done ? "✅" : notDoneIcon(theme, subject);
     }
 
-    // Download helper
+    // Download helper (JSON export)
     function downloadText(filename, text, mime="application/json"){
       const blob = new Blob([text], {type: mime});
       const url = URL.createObjectURL(blob);
@@ -625,7 +628,6 @@
       w.focus();
       setTimeout(()=>w.print(), 400);
     }
-
     function escapeHtml(s){
       return String(s)
         .replaceAll("&","&amp;")
@@ -651,7 +653,6 @@
       const celebratedRef = useRef({});
 
       const todayKey = useMemo(()=>isoKey(new Date()), []);
-
       const importInputRef = useRef(null);
 
       function currentDateFor(lecture){
@@ -667,7 +668,6 @@
           if(st.moveMap && typeof st.moveMap === "object") setMoveMap(st.moveMap);
           if(st.notes && typeof st.notes === "object") setNotes(st.notes);
         }
-        // Auto-open Today
         const inRange = base.days.some(d=>d.dateKey===todayKey);
         setSelectedDateKey(inRange ? todayKey : base.days[0].dateKey);
       }, [base.days, todayKey]);
@@ -696,7 +696,7 @@
         const g = grouped[selectedDateKey];
         if(!g) return [];
         const flat = [];
-        ["Ortho","Neuromedicine","Neurosurgery","Healthcare"].forEach(s=>flat.push(...g[s]));
+        SUBJECTS_ORDER.forEach(s=>flat.push(...g[s]));
         return flat;
       }, [grouped, selectedDateKey]);
 
@@ -780,7 +780,7 @@
         setLastMove(null);
       }
 
-      // ✅ FIXED: Notes now writable
+      /* ✅ FIXED NOTES: now writes to notes[dateKey] */
       function updateNote(dateKey, value){
         setNotes(prev => ({ ...prev, value }));
       }
@@ -799,9 +799,7 @@
         downloadText(`medical-checklist-backup-${stamp}.json`, JSON.stringify(payload, null, 2), "application/json");
       }
 
-      function triggerImport(){
-        importInputRef.current?.click();
-      }
+      function triggerImport(){ importInputRef.current?.click(); }
 
       async function importJSONFile(file){
         const text = await file.text();
@@ -809,13 +807,11 @@
         try{ obj = JSON.parse(text); }catch{ alert("Invalid JSON file."); return; }
         if(!obj || typeof obj !== "object"){ alert("Invalid JSON structure."); return; }
 
-        // soft validation
         if(Array.isArray(obj.completedIds)) setCompleted(new Set(obj.completedIds));
         if(obj.moveMap && typeof obj.moveMap === "object") setMoveMap(obj.moveMap);
         if(obj.notes && typeof obj.notes === "object") setNotes(obj.notes);
         if(typeof obj.theme === "string") setTheme(obj.theme);
 
-        // allow celebrations again if needed
         celebratedRef.current = {};
         alert("Import completed ✅");
       }
@@ -827,7 +823,7 @@
         e.target.value = "";
       }
 
-      // Notes PDF (Selected / All)
+      // Notes PDF (Selected/All)
       function exportNotesPDF(mode="selected"){
         const dayList = (mode === "all") ? base.days : [selectedDay];
 
@@ -889,7 +885,7 @@
         openPrintWindow(html);
       }
 
-      // Clouds moving background items
+      // Clouds drifting background items
       const clouds = useMemo(()=>{
         const emojis = ["☁️","☀️","🌧️","🌨️","🌙"];
         const items = [];
@@ -904,6 +900,33 @@
         }
         return items;
       }, []);
+
+      // Summary (3 bars)
+      const summary = useMemo(()=>{
+        const sums = { Ortho:{total:0,done:0}, Healthcare:{total:0,done:0}, Neurology:{total:0,done:0} };
+        base.lectures.forEach(L=>{
+          const bucket = (L.subject==="Neuromedicine" || L.subject==="Neurosurgery") ? "Neurology" : L.subject;
+          sums[bucket].total += 1;
+          if(completed.has(L.lectureId)) sums[bucket].done += 1;
+        });
+        const pct = (x)=>clampPct((x.done/(x.total||1))*100);
+        return {
+          Ortho:{...sums.Ortho, pct: pct(sums.Ortho)},
+          Healthcare:{...sums.Healthcare, pct: pct(sums.Healthcare)},
+          Neurology:{...sums.Neurology, pct: pct(sums.Neurology)}
+        };
+      }, [base.lectures, completed]);
+
+      function gradientFor(key){
+        if(theme==="army"){
+          if(key==="Ortho") return "linear-gradient(90deg, #d4af37, #9ae66e)";
+          if(key==="Healthcare") return "linear-gradient(90deg, #9ae66e, #d4af37)";
+          return "linear-gradient(90deg, #7dd3fc, rgba(255,255,255,.25))";
+        }
+        if(key==="Ortho") return "linear-gradient(90deg, #38bdf8, var(--accent))";
+        if(key==="Healthcare") return "linear-gradient(90deg, #fb7185, var(--accent2))";
+        return "linear-gradient(90deg, var(--accent2), var(--accent))";
+      }
 
       function renderDayBox(){
         const dayGroup = grouped[selectedDateKey];
@@ -985,12 +1008,11 @@
 
       return (
         <>
-          {/* Clouds moving background layer */}
+          {/* Clouds moving background */}
           {theme === "clouds" && (
             <div className="cloudLayer" aria-hidden="true">
               {clouds.map(c=>(
-                <span
-                  key={c.id}
+                <span key={c.id}
                   style={{
                     top: c.top + "vh",
                     fontSize: c.size + "px",
@@ -1072,7 +1094,7 @@
                       <div>Progress: <strong>{Math.round(overallPct)}%</strong> (out of 100)</div>
                       <div>Lectures completed: <strong>{doneCount}/{TOTAL_LECTURES}</strong></div>
                     </div>
-                    <div className="bar" aria-label="Overall progress bar">
+                    <div className="bar">
                       <div className="barFill" style={{width: overallPct + "%"}}></div>
                     </div>
                   </div>
@@ -1085,10 +1107,41 @@
                       <option value="army">{THEMES.army}</option>
                     </select>
 
-                    <button className="btn" onClick={exportJSON}>Export JSON</button>
+                    <button className="btn" onClick={()=>{
+                      const payload = {
+                        version: 1,
+                        exportedAt: new Date().toISOString(),
+                        theme,
+                        completedIds: Array.from(completed),
+                        moveMap,
+                        notes
+                      };
+                      const stamp = new Date().toISOString().slice(0,10);
+                      downloadText(`medical-checklist-backup-${stamp}.json`, JSON.stringify(payload, null, 2));
+                    }}>Export JSON</button>
 
-                    <input ref={importInputRef} type="file" accept="application/json" style={{display:"none"}} onChange={onImportChange} />
-                    <button className="btn" onClick={triggerImport}>Import JSON</button>
+                    <input
+                      ref={importInputRef}
+                      type="file"
+                      accept="application/json"
+                      style={{display:"none"}}
+                      onChange={(e)=>{
+                        const file = e.target.files && e.target.files[0];
+                        if(!file) return;
+                        file.text().then(text=>{
+                          let obj;
+                          try{ obj = JSON.parse(text); }catch{ alert("Invalid JSON"); return; }
+                          if(Array.isArray(obj.completedIds)) setCompleted(new Set(obj.completedIds));
+                          if(obj.moveMap && typeof obj.moveMap === "object") setMoveMap(obj.moveMap);
+                          if(obj.notes && typeof obj.notes === "object") setNotes(obj.notes);
+                          if(typeof obj.theme === "string") setTheme(obj.theme);
+                          celebratedRef.current = {};
+                          alert("Import completed ✅");
+                        });
+                        e.target.value = "";
+                      }}
+                    />
+                    <button className="btn" onClick={()=>importInputRef.current?.click()}>Import JSON</button>
 
                     <button className="btn" onClick={()=>exportNotesPDF("selected")}>Notes PDF (Selected)</button>
                     <button className="btn" onClick={()=>exportNotesPDF("all")}>Notes PDF (All)</button>
@@ -1097,9 +1150,7 @@
                       setCompleted(new Set());
                       setMoveMap({});
                       celebratedRef.current = {};
-                    }}>
-                      Reset progress
-                    </button>
+                    }}>Reset progress</button>
                   </div>
                 </div>
               </div>
@@ -1133,6 +1184,23 @@
                   )}
                 </div>
                 {renderDayBox()}
+              </div>
+
+              {/* ✅ Restored 3 subject progress cards */}
+              <div className="summaryRow">
+                {["Ortho","Healthcare","Neurology"].map(k => (
+                  <div className="card summaryCard" key={k}>
+                    <div className="sumTop">
+                      <p className="sumTitle">
+                        {k === "Ortho" ? "Orthopedics" : (k === "Healthcare" ? "Healthcare" : "Neurology (Neuromedicine + Neurosurgery)")}
+                      </p>
+                      <div className="sumVal">{Math.round(summary[k].pct)}% • {summary[k].done}/{summary[k].total}</div>
+                    </div>
+                    <div className="sumBar" aria-hidden="true">
+                      <div className="sumFill" style={{width: summary[k].pct + "%", background: gradientFor(k)}}></div>
+                    </div>
+                  </div>
+                ))}
               </div>
 
             </div>
