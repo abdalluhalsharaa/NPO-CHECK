@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Medical Checklist</title>
 
-  <!-- Correct script tags -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -13,8 +12,8 @@
   <style>
     :root{
       --radius: 18px;
-      --shadow: 0 22px 60px rgba(0,0,0,.12);
       --shadow2: 0 12px 30px rgba(0,0,0,.10);
+      --shadow: 0 22px 60px rgba(0,0,0,.12);
       --t: .18s ease;
       --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
@@ -31,6 +30,7 @@
       --muted: #51637d;
       --accent: #0ea5a4;
       --accent2:#2563eb;
+      --neuro: #7c3aed;         /* neuro accent */
       --danger:#e11d48;
       --focus: 0 0 0 4px rgba(37,99,235,.18);
 
@@ -50,6 +50,7 @@
       --muted: #a9b7dc;
       --accent: #35d0ba;
       --accent2:#5aa7ff;
+      --neuro: #a78bfa;
       --danger:#ff4d79;
       --focus: 0 0 0 4px rgba(53,208,186,.18);
 
@@ -69,25 +70,27 @@
       --muted: #b4b7e5;
       --accent:#b8ff6a;
       --accent2:#7c3aed;
+      --neuro: #38bdf8;
       --danger:#ff3d9a;
       --focus: 0 0 0 4px rgba(184,255,106,.18);
 
       --grad1: radial-gradient(1200px 600px at 20% -10%, rgba(124,58,237,.26), transparent 60%);
       --grad2: radial-gradient(900px 500px at 92% 0%, rgba(184,255,106,.16), transparent 60%);
-      --grad3: radial-gradient(700px 500px at 20% 110%, rgba(124,58,237,.16), transparent 60%);
+      --grad3: radial-gradient(700px 500px at 20% 110%, rgba(56,189,248,.14), transparent 60%);
       --grad4: radial-gradient(700px 500px at 90% 110%, rgba(184,255,106,.10), transparent 60%);
     }
 
-    /* Army theme */
+    /* Army */
     [data-theme="army"]{
-      --bgSolid: #0b0f0a;
-      --panel: rgba(26, 31, 23, .88);
-      --panel2: rgba(16, 20, 14, .86);
+      --bgSolid: #071006;
+      --panel: rgba(18, 26, 16, .88);
+      --panel2: rgba(12, 18, 10, .86);
       --line: rgba(255,255,255,.10);
       --text: #f0f4ea;
       --muted: #b9c1ad;
       --accent: #9ae66e;
       --accent2:#d4af37;
+      --neuro: #7dd3fc;
       --danger:#ff5a7a;
       --focus: 0 0 0 4px rgba(154,230,110,.18);
 
@@ -105,37 +108,29 @@
       background: var(--grad1), var(--grad2), var(--grad3), var(--grad4), var(--bgSolid);
       color: var(--text);
       overflow-x:hidden;
+      position: relative;
     }
 
-    /* Background video (Clouds) */
-    .bgVideo{
-      position: fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit: cover;
-      z-index: -2;
-      opacity: .55;
-      filter: saturate(1.05) contrast(1.02);
-    }
-    [data-theme="clouds"] .bgVideo{
-      opacity: .62;
-    }
-    [data-theme="night"] .bgVideo,
-    [data-theme="neon"] .bgVideo,
-    [data-theme="army"] .bgVideo{
-      display:none;
-    }
-    .bgShade{
+    /* Army camo overlay */
+    body::before{
+      content:"";
       position: fixed;
       inset:0;
       z-index: -1;
-      background: linear-gradient(180deg, rgba(255,255,255,.0), rgba(255,255,255,.18));
       pointer-events:none;
+      opacity: 0;
     }
-    [data-theme="night"] .bgShade{ background: linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.40)); }
-    [data-theme="neon"] .bgShade{ background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.36)); }
-    [data-theme="army"] .bgShade{ background: linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.45)); }
+    [data-theme="army"] body::before{
+      opacity: .75;
+      background:
+        radial-gradient(400px 260px at 12% 30%, rgba(154,230,110,.18), transparent 60%),
+        radial-gradient(380px 260px at 72% 40%, rgba(212,175,55,.12), transparent 62%),
+        radial-gradient(420px 280px at 50% 75%, rgba(0,0,0,.18), transparent 60%),
+        repeating-linear-gradient(45deg, rgba(10,18,10,.35) 0 14px, rgba(23,40,18,.35) 14px 28px, rgba(60,90,45,.35) 28px 42px),
+        repeating-linear-gradient(-35deg, rgba(5,12,5,.22) 0 18px, rgba(80,110,60,.14) 18px 36px);
+      filter: contrast(1.05) saturate(1.1);
+      mix-blend-mode: overlay;
+    }
 
     .wrap{ min-height:100%; padding: 18px; display:flex; justify-content:center; }
     .container{ width: min(1100px, 100%); display:flex; flex-direction:column; gap:14px; }
@@ -147,8 +142,35 @@
       box-shadow: var(--shadow2);
       padding:14px;
       backdrop-filter: blur(10px);
+      position: relative;
     }
 
+    /* Neon rotating ring around day box */
+    .dayCard{ position: relative; }
+    [data-theme="neon"] .dayCard::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius: calc(var(--radius) + 2px);
+      background: conic-gradient(from 0deg, rgba(184,255,106,.0), rgba(184,255,106,.55), rgba(124,58,237,.55), rgba(56,189,248,.55), rgba(184,255,106,.0));
+      filter: blur(10px);
+      opacity: .85;
+      z-index: 0;
+      animation: spin 2.8s linear infinite;
+    }
+    [data-theme="neon"] .dayCard::after{
+      content:"";
+      position:absolute;
+      inset: 1px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      z-index: 0;
+    }
+    [data-theme="neon"] .dayCard > *{ position: relative; z-index: 1; }
+
+    @keyframes spin{ to{ transform: rotate(360deg);} }
+
+    /* Header layout */
     .topRow{
       display:flex;
       justify-content:space-between;
@@ -168,7 +190,7 @@
       border-radius: 14px;
       font-size: 13px;
       outline:none;
-      min-width: 190px;
+      min-width: 210px;
     }
     .select:focus{ box-shadow: var(--focus); }
 
@@ -189,16 +211,34 @@
       background: rgba(225,29,72,.10);
     }
 
-    .hint{
-      margin-top:8px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.4;
+    /* Countdown styles */
+    .countdownRow{ display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; margin-top: 6px; }
+    .examBlock{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+
+    /* Primary vs secondary countdown blocks */
+    .primaryExam{
+      font-size: 22px;
+      font-weight: 1000;
+      letter-spacing:.2px;
+    }
+    .secondaryExam{
+      font-size: 16px;            /* a bit bigger than before */
+      font-weight: 950;
+      letter-spacing:.15px;
     }
 
-    .countdownRow{ display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; }
-    .bigCountdown{ font-size: 22px; font-weight: 1000; letter-spacing:.2px; }
-    .smallCountdown{ font-size: 13px; color: var(--muted); font-weight: 800; }
+    /* Neuro color different + slightly larger (but still secondary unless swapped on May31) */
+    .neuroAccent{ color: var(--neuro); }
+
+    /* Neon blinking effect on countdown numbers */
+    [data-theme="neon"] .blink{
+      animation: blinkGlow 1.2s ease-in-out infinite;
+      text-shadow: 0 0 14px rgba(56,189,248,.55), 0 0 26px rgba(184,255,106,.35);
+    }
+    @keyframes blinkGlow{
+      0%, 100%{ opacity: .65; filter: brightness(1); }
+      50%{ opacity: 1; filter: brightness(1.2); }
+    }
 
     .progressMeta{
       display:flex;
@@ -245,7 +285,6 @@
     .datePill.active{ background: rgba(37,99,235,.10); border-color: rgba(37,99,235,.45); }
     .datePill.today{ background: rgba(14,165,164,.10); border-color: rgba(14,165,164,.45); }
     [data-theme="army"] .datePill.active{ background: rgba(154,230,110,.12); border-color: rgba(154,230,110,.35); }
-
     .miniDot{ width:8px; height:8px; border-radius:50%; background: var(--accent); }
 
     .todayTitle{
@@ -293,15 +332,9 @@
     .item:hover{ transform: translateY(-1px); border-color: rgba(14,165,164,.35); }
     [data-theme="army"] .item:hover{ border-color: rgba(154,230,110,.35); }
 
-    .leftRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
+    .leftRow{ display:flex; align-items:center; gap:10px; min-width:0; }
     .statusBtn{
-      width: 34px;
-      height: 34px;
+      width: 34px; height: 34px;
       border-radius: 12px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.08);
@@ -331,7 +364,6 @@
     [data-theme="night"] .item.done{ border-color: rgba(53,208,186,.45); background: rgba(53,208,186,.10); }
     [data-theme="neon"] .item.done{ border-color: rgba(184,255,106,.45); background: rgba(184,255,106,.10); }
     [data-theme="army"] .item.done{ border-color: rgba(154,230,110,.45); background: rgba(154,230,110,.10); }
-
     .item.done .text{ text-decoration: line-through; opacity:.75; }
 
     .item::after{
@@ -346,12 +378,7 @@
     }
     .item.done::after{ transform: translateX(120%); opacity:1; }
 
-    .rightControls{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex: 0 0 auto;
-    }
+    .rightControls{ display:flex; align-items:center; gap:10px; flex: 0 0 auto; }
     .moveSelect{
       border:1px solid var(--line);
       background: rgba(255,255,255,.08);
@@ -360,11 +387,11 @@
       border-radius: 12px;
       font-size: 12px;
       outline:none;
-      max-width: 190px;
+      max-width: 200px;
     }
     .moveSelect:focus{ box-shadow: var(--focus); }
 
-    /* Note (May 30) — RTL inside */
+    /* Note (May 30) RTL inside */
     .note{
       border:1px solid var(--line);
       background: rgba(255,255,255,.06);
@@ -470,8 +497,7 @@
     .confettiWrap{ pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index: 9998; }
     .confettiPiece{
       position:absolute;
-      width:10px;
-      height:14px;
+      width:10px; height:14px;
       border-radius: 3px;
       opacity:.95;
       transform: translate3d(0,-20px,0) rotate(0deg);
@@ -516,7 +542,7 @@
       100%{ opacity:0; }
     }
 
-    /* Cloud emojis overlay (Clouds theme) */
+    /* Stars overlay (Clouds theme) */
     .skyEmojis{
       position: fixed;
       inset:0;
@@ -529,16 +555,16 @@
     [data-theme="clouds"] .skyEmojis{ display:block; }
     .skyEmojis span{
       position:absolute;
-      font-size: 22px;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
-      animation: drift 14s linear infinite;
+      font-size: 20px;
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,.12));
+      animation: drift 16s linear infinite;
       transform: translateX(-10vw);
       opacity: .85;
     }
     @keyframes drift{
-      0%{ transform: translateX(-12vw) translateY(0px); opacity: .0; }
+      0%{ transform: translateX(-12vw) translateY(0px) rotate(0deg); opacity: .0; }
       10%{ opacity: .85; }
-      100%{ transform: translateX(112vw) translateY(-20px); opacity: .0; }
+      100%{ transform: translateX(112vw) translateY(-22px) rotate(18deg); opacity: .0; }
     }
   </style>
 </head>
@@ -549,9 +575,9 @@
   <script type="text/babel">
     const {useEffect, useMemo, useRef, useState} = React;
 
-    const STORAGE_KEY = "medicalChecklist.v7";
+    const STORAGE_KEY = "medicalChecklist.v8";
     const THEMES = {
-      clouds: "Clouds (Video + 🌫️🌥️🌧️☄️)",
+      clouds: "Clouds (Stars ✨⭐️🪐)",
       night: "Night Shift",
       neon: "Neon Pulse",
       army: "Army Mode"
@@ -565,7 +591,6 @@
       Healthcare: "Healthcare"
     };
 
-    // Totals (as you specified): Ortho 21, Healthcare 8, Neurology 15 => Total 44
     const TOTAL_LECTURES = 44;
 
     function startOfDay(date){ return new Date(date.getFullYear(), date.getMonth(), date.getDate()); }
@@ -579,10 +604,8 @@
       return date.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
     }
 
-    // Base days + base lectures (stable lectureId). Moving uses lectureId->dateKey map.
     function buildBaseData(year){
       const d = (m, day) => new Date(year, m, day);
-
       const days = [
         { date: d(4,22), title:"22 May", note:null },
         { date: d(4,23), title:"23 May", note:null },
@@ -603,78 +626,76 @@
       ].map(x => ({...x, dateKey: isoKey(x.date)}));
 
       const L = (dateKey, subject, text, idx) => ({
-        lectureId: `L__${dateKey}__${subject}__${idx}`, // stable
+        lectureId: `L__${dateKey}__${subject}__${idx}`,
         originalDateKey: dateKey,
         subject,
         text
       });
 
-      // Lectures (clean titles, per your rules)
       const lectures = [];
-      const byDate = Object.fromEntries(days.map(d => [d.dateKey, d.dateKey]));
 
-      // 22 May
-      lectures.push(L(byDate[isoKey(d(4,22))], "Ortho", "Principles of fractures", 0));
-      lectures.push(L(byDate[isoKey(d(4,22))], "Neuromedicine", "Medical neurology", 0));
-      lectures.push(L(byDate[isoKey(d(4,22))], "Healthcare", "Evidence based medicine", 0));
+      // 22
+      lectures.push(L(isoKey(d(4,22)), "Ortho", "Principles of fractures", 0));
+      lectures.push(L(isoKey(d(4,22)), "Neuromedicine", "Medical neurology", 0));
+      lectures.push(L(isoKey(d(4,22)), "Healthcare", "Evidence based medicine", 0));
 
-      // 23 May
-      lectures.push(L(byDate[isoKey(d(4,23))], "Ortho", "Peripheral nerve injuries", 0));
-      lectures.push(L(byDate[isoKey(d(4,23))], "Ortho", "X-ray", 1));
-      lectures.push(L(byDate[isoKey(d(4,23))], "Neuromedicine", "CVA", 0));
-      lectures.push(L(byDate[isoKey(d(4,23))], "Healthcare", "Communication skills", 0));
+      // 23
+      lectures.push(L(isoKey(d(4,23)), "Ortho", "Peripheral nerve injuries", 0));
+      lectures.push(L(isoKey(d(4,23)), "Ortho", "X-ray", 1));
+      lectures.push(L(isoKey(d(4,23)), "Neuromedicine", "CVA", 0));
+      lectures.push(L(isoKey(d(4,23)), "Healthcare", "Communication skills", 0));
 
-      // 24 May
-      lectures.push(L(byDate[isoKey(d(4,24))], "Ortho", "Overview of Spine Anatomy", 0));
-      lectures.push(L(byDate[isoKey(d(4,24))], "Ortho", "Scoliosis & kyphosis", 1));
-      lectures.push(L(byDate[isoKey(d(4,24))], "Neuromedicine", "Peripheral nervous", 0));
-      lectures.push(L(byDate[isoKey(d(4,24))], "Healthcare", "Dr.Pt relationship", 0));
+      // 24
+      lectures.push(L(isoKey(d(4,24)), "Ortho", "Overview of Spine Anatomy", 0));
+      lectures.push(L(isoKey(d(4,24)), "Ortho", "Scoliosis & kyphosis", 1));
+      lectures.push(L(isoKey(d(4,24)), "Neuromedicine", "Peripheral nervous", 0));
+      lectures.push(L(isoKey(d(4,24)), "Healthcare", "Dr.Pt relationship", 0));
 
-      // 25 May
+      // 25
       [
         "Spondylosis & spondylolisthesis",
         "Spina bifida and torticollis",
         "Spine disorders",
         "Principles in spine fracture",
         "Intervertebral disc prolapse"
-      ].forEach((t,i)=>lectures.push(L(byDate[isoKey(d(4,25))], "Ortho", t, i)));
-      lectures.push(L(byDate[isoKey(d(4,25))], "Neuromedicine", "Movement disorders", 0));
-      lectures.push(L(byDate[isoKey(d(4,25))], "Healthcare", "The Diagnostic process", 0));
+      ].forEach((t,i)=>lectures.push(L(isoKey(d(4,25)), "Ortho", t, i)));
+      lectures.push(L(isoKey(d(4,25)), "Neuromedicine", "Movement disorders", 0));
+      lectures.push(L(isoKey(d(4,25)), "Healthcare", "The Diagnostic process", 0));
 
-      // 26 May
-      lectures.push(L(byDate[isoKey(d(4,26))], "Ortho", "Bone tumor x ray", 0));
-      lectures.push(L(byDate[isoKey(d(4,26))], "Ortho", "Musculoskeletal", 1));
-      lectures.push(L(byDate[isoKey(d(4,26))], "Neuromedicine", "Multiple sclerosis", 0));
-      lectures.push(L(byDate[isoKey(d(4,26))], "Neurosurgery", "Back pain", 0));
-      lectures.push(L(byDate[isoKey(d(4,26))], "Healthcare", "Breaking bad news", 0));
+      // 26
+      lectures.push(L(isoKey(d(4,26)), "Ortho", "Bone tumor x ray", 0));
+      lectures.push(L(isoKey(d(4,26)), "Ortho", "Musculoskeletal", 1));
+      lectures.push(L(isoKey(d(4,26)), "Neuromedicine", "Multiple sclerosis", 0));
+      lectures.push(L(isoKey(d(4,26)), "Neurosurgery", "Back pain", 0));
+      lectures.push(L(isoKey(d(4,26)), "Healthcare", "Breaking bad news", 0));
 
-      // 27 May (Upper limb parts each count as 1 lecture)
-      lectures.push(L(byDate[isoKey(d(4,27))], "Ortho", "Upper limb (first half)", 0));
-      lectures.push(L(byDate[isoKey(d(4,27))], "Neuromedicine", "Dementia", 0));
-      lectures.push(L(byDate[isoKey(d(4,27))], "Healthcare", "Counselling", 0));
+      // 27
+      lectures.push(L(isoKey(d(4,27)), "Ortho", "Upper limb (first half)", 0));
+      lectures.push(L(isoKey(d(4,27)), "Neuromedicine", "Dementia", 0));
+      lectures.push(L(isoKey(d(4,27)), "Healthcare", "Counselling", 0));
 
-      // 28 May
-      lectures.push(L(byDate[isoKey(d(4,28))], "Ortho", "Upper limb (second half)", 0));
-      lectures.push(L(byDate[isoKey(d(4,28))], "Ortho", "Pediatric foot", 1));
-      lectures.push(L(byDate[isoKey(d(4,28))], "Ortho", "Legg Calve Perthes disease", 2));
-      lectures.push(L(byDate[isoKey(d(4,28))], "Neuromedicine", "Epilepsy", 0));
-      lectures.push(L(byDate[isoKey(d(4,28))], "Neurosurgery", "CNS tumors", 0));
-      lectures.push(L(byDate[isoKey(d(4,28))], "Healthcare", "Laboratory interpretation", 0));
+      // 28
+      lectures.push(L(isoKey(d(4,28)), "Ortho", "Upper limb (second half)", 0));
+      lectures.push(L(isoKey(d(4,28)), "Ortho", "Pediatric foot", 1));
+      lectures.push(L(isoKey(d(4,28)), "Ortho", "Legg Calve Perthes disease", 2));
+      lectures.push(L(isoKey(d(4,28)), "Neuromedicine", "Epilepsy", 0));
+      lectures.push(L(isoKey(d(4,28)), "Neurosurgery", "CNS tumors", 0));
+      lectures.push(L(isoKey(d(4,28)), "Healthcare", "Laboratory interpretation", 0));
 
-      // 29 May (Infective removed from here)
+      // 29 (no Infective here)
       ["Arthritis in hip & knee","SCFE","DDH","Genu varus and valgus","Lower limb"]
-        .forEach((t,i)=>lectures.push(L(byDate[isoKey(d(4,29))], "Ortho", t, i)));
-      lectures.push(L(byDate[isoKey(d(4,29))], "Healthcare", "Difficult patient", 0));
+        .forEach((t,i)=>lectures.push(L(isoKey(d(4,29)), "Ortho", t, i)));
+      lectures.push(L(isoKey(d(4,29)), "Healthcare", "Difficult patient", 0));
 
-      // 31 May (Infective moved here)
-      lectures.push(L(byDate[isoKey(d(4,31))], "Neuromedicine", "Infective neurological diseases", 0));
-      lectures.push(L(byDate[isoKey(d(4,31))], "Neurosurgery", "Spinal injuries", 0));
-      lectures.push(L(byDate[isoKey(d(4,31))], "Neurosurgery", "Congenital anomalies", 1));
+      // 31 (Infective moved here)
+      lectures.push(L(isoKey(d(4,31)), "Neuromedicine", "Infective neurological diseases", 0));
+      lectures.push(L(isoKey(d(4,31)), "Neurosurgery", "Spinal injuries", 0));
+      lectures.push(L(isoKey(d(4,31)), "Neurosurgery", "Congenital anomalies", 1));
 
       // 1 June (Headache moved here)
-      lectures.push(L(byDate[isoKey(d(5,1))], "Neuromedicine", "Headache", 0));
-      lectures.push(L(byDate[isoKey(d(5,1))], "Neurosurgery", "Head injuries", 0));
-      lectures.push(L(byDate[isoKey(d(5,1))], "Neurosurgery", "Introduction to SAH", 1));
+      lectures.push(L(isoKey(d(5,1)), "Neuromedicine", "Headache", 0));
+      lectures.push(L(isoKey(d(5,1)), "Neurosurgery", "Head injuries", 0));
+      lectures.push(L(isoKey(d(5,1)), "Neurosurgery", "Introduction to SAH", 1));
 
       return {days, lectures};
     }
@@ -689,7 +710,7 @@
       try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch{}
     }
 
-    function makeConfettiPieces(count=160){
+    function makeConfettiPieces(count=170){
       const colors = ["#2563eb","#0ea5a4","#22c55e","#f59e0b","#fb7185","#7c3aed","#38bdf8"];
       const pieces = [];
       for(let i=0;i<count;i++){
@@ -699,21 +720,15 @@
         const drift = (Math.random() * 160 - 80) + "px";
         const rot = (Math.random() * 720 - 360) + "deg";
         const x = left + "vw";
-        pieces.push({
-          id: `${Date.now()}_${i}`,
-          left: left + "vw",
-          top: (-10 - Math.random()*30) + "px",
-          bg: colors[Math.floor(Math.random()*colors.length)],
-          delay: delay + "s",
-          duration: duration + "s",
-          drift, rot, x
+        pieces.push({ id: `${Date.now()}_${i}`, left:left+"vw", top:(-10-Math.random()*30)+"px",
+          bg: colors[Math.floor(Math.random()*colors.length)], delay:delay+"s", duration:duration+"s", drift, rot, x
         });
       }
       return pieces;
     }
 
     function statusEmoji(theme, done){
-      if(theme === "clouds") return done ? "🌥️" : "🌫️";
+      if(theme === "clouds") return done ? "✨" : "⭐️";
       if(theme === "army") return done ? "💣" : "🪖";
       if(theme === "neon") return done ? "◆" : "◇";
       return done ? "✅" : "⬜";
@@ -727,24 +742,22 @@
       const [completed, setCompleted] = useState(()=>new Set());
       const [moveMap, setMoveMap] = useState(()=>({})); // lectureId -> dateKey
       const [selectedDateKey, setSelectedDateKey] = useState(base.days[0].dateKey);
+      const [notes, setNotes] = useState(()=> ({}));
 
-      // Notes per day
-      const [notes, setNotes] = useState(()=> ({})); // dateKey -> string
-
-      // Undo
-      const [lastMove, setLastMove] = useState(null); // {lectureId, fromDateKey, toDateKey, text}
+      const [lastMove, setLastMove] = useState(null);
       const undoTimer = useRef(null);
 
-      // Confetti
       const [confetti, setConfetti] = useState([]);
       const [showBanner, setShowBanner] = useState(false);
       const celebratedRef = useRef({});
 
-      // Clouds video: use local file picker OR clouds.mp4 by default
-      const [cloudVideoUrl, setCloudVideoUrl] = useState("clouds.mp4");
-      const fileInputRef = useRef(null);
+      const todayKey = useMemo(()=>isoKey(new Date()), []);
 
-      // Load state
+      function currentDateFor(lecture){
+        const mapped = moveMap[lecture.lectureId];
+        return base.days.some(d=>d.dateKey===mapped) ? mapped : lecture.originalDateKey;
+      }
+
       useEffect(()=>{
         const st = loadState();
         if(st){
@@ -752,57 +765,26 @@
           if(Array.isArray(st.completedIds)) setCompleted(new Set(st.completedIds));
           if(st.moveMap && typeof st.moveMap === "object") setMoveMap(st.moveMap);
           if(st.notes && typeof st.notes === "object") setNotes(st.notes);
-          // ignore saved selectedDateKey because you want auto-open today
         }
+        // Auto-open Today
+        const inRange = base.days.some(d=>d.dateKey===todayKey);
+        setSelectedDateKey(inRange ? todayKey : base.days[0].dateKey);
+      }, [base.days, todayKey]);
 
-        // ✅ Auto-open Today
-        const today = isoKey(new Date());
-        const inRange = base.days.some(d=>d.dateKey===today);
-        setSelectedDateKey(inRange ? today : base.days[0].dateKey);
-        // eslint-disable-next-line
-      }, [base.days]);
-
-      // Persist
       useEffect(()=>{
-        saveState({
-          theme,
-          completedIds: Array.from(completed),
-          moveMap,
-          selectedDateKey, // kept (optional)
-          notes
-        });
+        saveState({ theme, completedIds:Array.from(completed), moveMap, selectedDateKey, notes });
       }, [theme, completed, moveMap, selectedDateKey, notes]);
 
-      // Apply theme
       useEffect(()=>{ document.documentElement.setAttribute("data-theme", theme); }, [theme]);
 
-      const todayKey = useMemo(()=>isoKey(new Date()), []);
-
-      // Compute current dateKey for a lecture
-      function currentDateFor(lecture){
-        const mapped = moveMap[lecture.lectureId];
-        return base.days.some(d=>d.dateKey===mapped) ? mapped : lecture.originalDateKey;
-      }
-
-      // Group lectures by day then by subject
       const grouped = useMemo(()=>{
         const byDay = {};
-        base.days.forEach(d=>{
-          byDay[d.dateKey] = { Ortho:[], Neuromedicine:[], Neurosurgery:[], Healthcare:[] };
-        });
+        base.days.forEach(d=> byDay[d.dateKey] = {Ortho:[],Neuromedicine:[],Neurosurgery:[],Healthcare:[]} );
         base.lectures.forEach(L=>{
           const dk = currentDateFor(L);
-          if(!byDay[dk]) return;
-          byDay[dk][L.subject].push(L);
-        });
-        // keep stable order
-        Object.keys(byDay).forEach(dk=>{
-          SUBJECTS_ORDER.forEach(s=>{
-            byDay[dk][s].sort((a,b)=>a.lectureId.localeCompare(b.lectureId));
-          });
+          if(byDay[dk]) byDay[dk][L.subject].push(L);
         });
         return byDay;
-        // eslint-disable-next-line
       }, [base, moveMap]);
 
       const selectedDay = useMemo(()=>{
@@ -810,10 +792,10 @@
       }, [base.days, selectedDateKey]);
 
       const selectedLectures = useMemo(()=>{
-        const dayGroup = grouped[selectedDateKey];
-        if(!dayGroup) return [];
+        const g = grouped[selectedDateKey];
+        if(!g) return [];
         const flat = [];
-        SUBJECTS_ORDER.forEach(s=>flat.push(...dayGroup[s]));
+        SUBJECTS_ORDER.forEach(s=>flat.push(...g[s]));
         return flat;
       }, [grouped, selectedDateKey]);
 
@@ -831,7 +813,28 @@
         return n;
       }, [selectedLectures, completed]);
 
-      // Celebrate ONLY when finishing all topics of the day (and only if day has topics, not note-only day)
+      // Exams
+      const examOrthoHealth = useMemo(()=>new Date(year, 4, 31), [year]); // May 31
+      const examNeuro = useMemo(()=>new Date(year, 5, 2), [year]);        // June 2
+
+      const daysToOrthoHealth = useMemo(()=>daysDiff(new Date(), examOrthoHealth), [examOrthoHealth]);
+      const daysToNeuro = useMemo(()=>daysDiff(new Date(), examNeuro), [examNeuro]);
+
+      const orthoLabel =
+        daysToOrthoHealth > 0 ? `${daysToOrthoHealth} day${daysToOrthoHealth===1?"":"s"} left` :
+        daysToOrthoHealth === 0 ? `Exam day` : `${Math.abs(daysToOrthoHealth)} day${Math.abs(daysToOrthoHealth)===1?"":"s"} ago`;
+
+      const neuroLabel =
+        daysToNeuro > 0 ? `${daysToNeuro} day${daysToNeuro===1?"":"s"} left` :
+        daysToNeuro === 0 ? `Exam day` : `${Math.abs(daysToNeuro)} day${Math.abs(daysToNeuro)===1?"":"s"} ago`;
+
+      // Swap emphasis on May 31 (Ortho exam day): Neuro becomes primary
+      const isOrthoExamDay = useMemo(()=>{
+        const now = startOfDay(new Date()).getTime();
+        return now === startOfDay(examOrthoHealth).getTime();
+      }, [examOrthoHealth]);
+
+      // Celebrate (ignore note day)
       useEffect(()=>{
         if(selectedDay.note) return;
         if(selectedLectures.length === 0) return;
@@ -841,7 +844,6 @@
           celebratedRef.current[key] = true;
           setShowBanner(true);
           setConfetti(makeConfettiPieces(170));
-
           const t1 = setTimeout(()=>setShowBanner(false), 3200);
           const t2 = setTimeout(()=>setConfetti([]), 3600);
           return ()=>{ clearTimeout(t1); clearTimeout(t2); };
@@ -856,55 +858,12 @@
         });
       }
 
-      // Exams countdowns
-      const examOrthoHealth = useMemo(()=>new Date(year, 4, 31), [year]); // May 31
-      const examNeuro = useMemo(()=>new Date(year, 5, 2), [year]);        // June 2
-      const daysToOrthoHealth = useMemo(()=>daysDiff(new Date(), examOrthoHealth), [examOrthoHealth]);
-      const daysToNeuro = useMemo(()=>daysDiff(new Date(), examNeuro), [examNeuro]);
-
-      const orthoLabel =
-        daysToOrthoHealth > 0 ? `${daysToOrthoHealth} day${daysToOrthoHealth===1?"":"s"} left` :
-        daysToOrthoHealth === 0 ? `Exam day` : `${Math.abs(daysToOrthoHealth)} day${Math.abs(daysToOrthoHealth)===1?"":"s"} ago`;
-
-      const neuroLabel =
-        daysToNeuro > 0 ? `${daysToNeuro} day${daysToNeuro===1?"":"s"} left` :
-        daysToNeuro === 0 ? `Exam day` : `${Math.abs(daysToNeuro)} day${Math.abs(daysToNeuro)===1?"":"s"} ago`;
-
-      // Summary: Ortho, Healthcare, Neurology (Neuromedicine + Neurosurgery)
-      const summary = useMemo(()=>{
-        const sums = { Ortho:{total:0,done:0}, Healthcare:{total:0,done:0}, Neurology:{total:0,done:0} };
-        base.lectures.forEach(L=>{
-          const bucket = (L.subject==="Neuromedicine" || L.subject==="Neurosurgery") ? "Neurology" : L.subject;
-          sums[bucket].total += 1;
-          if(completed.has(L.lectureId)) sums[bucket].done += 1;
-        });
-        const pct = (x)=>clampPct((x.done/(x.total||1))*100);
-        return {
-          Ortho:{...sums.Ortho, pct: pct(sums.Ortho)},
-          Healthcare:{...sums.Healthcare, pct: pct(sums.Healthcare)},
-          Neurology:{...sums.Neurology, pct: pct(sums.Neurology)},
-        };
-      }, [base.lectures, completed]);
-
-      function gradientFor(key){
-        if(theme==="army"){
-          if(key==="Ortho") return "linear-gradient(90deg, #d4af37, #9ae66e)";
-          if(key==="Healthcare") return "linear-gradient(90deg, #9ae66e, #d4af37)";
-          return "linear-gradient(90deg, #9ae66e, rgba(255,255,255,.35))";
-        }
-        if(key==="Ortho") return "linear-gradient(90deg, #38bdf8, var(--accent))";
-        if(key==="Healthcare") return "linear-gradient(90deg, #fb7185, var(--accent2))";
-        return "linear-gradient(90deg, var(--accent2), var(--accent))";
-      }
-
-      // Move lecture
       function moveLecture(lecture, toDateKey){
         const fromDateKey = currentDateFor(lecture);
         if(!toDateKey || toDateKey === fromDateKey) return;
 
         setMoveMap(prev=>({ ...prev, [lecture.lectureId]: toDateKey }));
 
-        // Show undo
         const msg = `Moved "${lecture.text}" (${fromDateKey} → ${toDateKey})`;
         setLastMove({ lectureId: lecture.lectureId, fromDateKey, toDateKey, text: lecture.text, msg });
 
@@ -922,49 +881,53 @@
         setLastMove(null);
       }
 
-      // Notes per day
       function updateNote(dateKey, value){
         setNotes(prev=>({ ...prev, value }));
       }
 
-      // Reset
-      const [showReset, setShowReset] = useState(false);
-      function resetProgress(){
-        setCompleted(new Set());
-        setMoveMap({});
-        celebratedRef.current = {};
-        setShowReset(false);
-      }
-
-      // Clouds video loader
-      function triggerPickVideo(){
-        if(fileInputRef.current) fileInputRef.current.click();
-      }
-      function onPickVideo(e){
-        const file = e.target.files && e.target.files[0];
-        if(!file) return;
-        const url = URL.createObjectURL(file);
-        setCloudVideoUrl(url);
-      }
-
-      // Cloud emoji overlay: stable random positions
+      // Stars overlay positions (clouds theme)
       const sky = useMemo(()=>{
-        const emojis = ["🌫️","🌥️","🌧️","☄️"];
+        const emojis = ["✨","🌟","⭐️","🪐","☄️"];
         const items = [];
         for(let i=0;i<18;i++){
           const em = emojis[Math.floor(Math.random()*emojis.length)];
           const top = Math.random()*90;
           const delay = Math.random()*8;
-          const dur = 10 + Math.random()*10;
+          const dur = 12 + Math.random()*10;
           items.push({id:i, em, top, delay, dur});
         }
         return items;
       }, []);
 
+      const summary = useMemo(()=>{
+        const sums = { Ortho:{total:0,done:0}, Healthcare:{total:0,done:0}, Neurology:{total:0,done:0} };
+        base.lectures.forEach(L=>{
+          const bucket = (L.subject==="Neuromedicine" || L.subject==="Neurosurgery") ? "Neurology" : L.subject;
+          sums[bucket].total += 1;
+          if(completed.has(L.lectureId)) sums[bucket].done += 1;
+        });
+        const pct = (x)=>clampPct((x.done/(x.total||1))*100);
+        return {
+          Ortho:{...sums.Ortho, pct: pct(sums.Ortho)},
+          Healthcare:{...sums.Healthcare, pct: pct(sums.Healthcare)},
+          Neurology:{...sums.Neurology, pct: pct(sums.Neurology)}
+        };
+      }, [base.lectures, completed]);
+
+      function gradientFor(key){
+        if(theme==="army"){
+          if(key==="Ortho") return "linear-gradient(90deg, #d4af37, #9ae66e)";
+          if(key==="Healthcare") return "linear-gradient(90deg, #9ae66e, #d4af37)";
+          return "linear-gradient(90deg, #7dd3fc, rgba(255,255,255,.25))";
+        }
+        if(key==="Ortho") return "linear-gradient(90deg, #38bdf8, var(--accent))";
+        if(key==="Healthcare") return "linear-gradient(90deg, #fb7185, var(--accent2))";
+        return "linear-gradient(90deg, var(--accent2), var(--accent))";
+      }
+
       function renderDayBox(){
         const dayGroup = grouped[selectedDateKey];
 
-        // May 30 note-only
         if(selectedDay.note){
           return (
             <>
@@ -985,7 +948,7 @@
         const blocks = [];
         SUBJECTS_ORDER.forEach(sub=>{
           const items = dayGroup ? dayGroup[sub] : [];
-          if(!items || items.length===0) return; // ignore empty subjects
+          if(!items || items.length===0) return;
           blocks.push(
             <div className="subjectBlock" key={sub}>
               <p className="subjectName">{SUBJECT_LABEL[sub]}</p>
@@ -996,29 +959,15 @@
                   return (
                     <li className={"item " + (isDone ? "done" : "")} key={L.lectureId}>
                       <div className="leftRow">
-                        <button
-                          className="statusBtn"
-                          onClick={()=>toggleLecture(L.lectureId)}
-                          aria-pressed={isDone}
-                          title={isDone ? "Mark as not done" : "Mark as done"}
-                        >
+                        <button className="statusBtn" onClick={()=>toggleLecture(L.lectureId)} aria-pressed={isDone}>
                           {statusEmoji(theme, isDone)}
                         </button>
                         <div className="text" title={L.text}>{L.text}</div>
                       </div>
-
                       <div className="rightControls">
-                        <select
-                          className="moveSelect"
-                          value={dk}
-                          onChange={(e)=>moveLecture(L, e.target.value)}
-                          aria-label="Move to another day"
-                          title="Move to…"
-                        >
+                        <select className="moveSelect" value={dk} onChange={(e)=>moveLecture(L, e.target.value)}>
                           {base.days.map(dy=>(
-                            <option key={dy.dateKey} value={dy.dateKey}>
-                              Move to: {dy.title}
-                            </option>
+                            <option key={dy.dateKey} value={dy.dateKey}>Move to: {dy.title}</option>
                           ))}
                         </select>
                       </div>
@@ -1052,47 +1001,33 @@
         );
       }
 
+      const primaryClass = theme==="neon" ? "blink" : "";
+      const neuroBlink = theme==="neon" ? "blink" : "";
+
       return (
         <>
-          {/* Clouds video background (only in clouds theme) */}
+          {/* Stars overlay in clouds theme */}
           {theme === "clouds" && (
-            <>
-              <video className="bgVideo" autoPlay muted loop playsInline src={cloudVideoUrl}></video>
-              <div className="skyEmojis" aria-hidden="true">
-                {sky.map(s=>(
-                  <span
-                    key={s.id}
-                    style={{
-                      top: s.top + "vh",
-                      left: (-10) + "vw",
-                      animationDelay: s.delay + "s",
-                      animationDuration: s.dur + "s"
-                    }}
-                  >
-                    {s.em}
-                  </span>
-                ))}
-              </div>
-            </>
+            <div className="skyEmojis" aria-hidden="true">
+              {sky.map(s=>(
+                <span key={s.id}
+                  style={{ top: s.top + "vh", left: (-10) + "vw", animationDelay: s.delay + "s", animationDuration: s.dur + "s" }}
+                >
+                  {s.em}
+                </span>
+              ))}
+            </div>
           )}
-          <div className="bgShade"></div>
 
           {/* Confetti */}
           {confetti.length > 0 && (
             <div className="confettiWrap" aria-hidden="true">
               {confetti.map(p => (
-                <div
-                  key={p.id}
-                  className="confettiPiece"
+                <div key={p.id} className="confettiPiece"
                   style={{
-                    left: p.left,
-                    top: p.top,
-                    background: p.bg,
-                    animationDelay: p.delay,
-                    animationDuration: p.duration,
-                    "--drift": p.drift,
-                    "--rot": p.rot,
-                    "--x": p.x
+                    left: p.left, top: p.top, background: p.bg,
+                    animationDelay: p.delay, animationDuration: p.duration,
+                    "--drift": p.drift, "--rot": p.rot, "--x": p.x
                   }}
                 />
               ))}
@@ -1119,15 +1054,33 @@
                 <div className="topRow">
                   <div>
                     <h1 className="title">🩺 Medical Checklist</h1>
-                    <p className="sub">Study plan • progress auto-saves locally • move lectures between days</p>
+                    <p className="sub">Study plan • auto-saves locally • move lectures between days</p>
 
+                    {/* Countdown with dynamic emphasis */}
                     <div className="countdownRow">
-                      <div className="bigCountdown">
-                        Ortho + Healthcare exam: <span style={{color:"var(--accent2)"}}>{orthoLabel}</span>
-                      </div>
-                      <div className="smallCountdown">
-                        Neuromedicine exam: <span style={{color:"var(--muted)"}}>{neuroLabel}</span>
-                      </div>
+                      {!isOrthoExamDay ? (
+                        <>
+                          <div className="examBlock primaryExam">
+                            Ortho + Healthcare exam:
+                            <span className={primaryClass} style={{color:"var(--accent2)"}}>{orthoLabel}</span>
+                          </div>
+                          <div className="examBlock secondaryExam">
+                            Neuromedicine exam:
+                            <span className={"neuroAccent " + neuroBlink}>{neuroLabel}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="examBlock primaryExam">
+                            Neuromedicine exam:
+                            <span className={"neuroAccent " + neuroBlink}>{neuroLabel}</span>
+                          </div>
+                          <div className="examBlock secondaryExam">
+                            Ortho + Healthcare exam:
+                            <span className={primaryClass} style={{color:"var(--muted)"}}>{orthoLabel}</span>
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     <div className="progressMeta">
@@ -1138,12 +1091,6 @@
                     <div className="bar" aria-label="Overall progress bar">
                       <div className="barFill" style={{width: overallPct + "%"}}></div>
                     </div>
-
-                    {theme === "clouds" && (
-                      <div className="hint">
-                        ☁️ Clouds video: place a file named <b>clouds.mp4</b> next to this HTML file, or click <b>Load cloud video</b> to choose any MP4.
-                      </div>
-                    )}
                   </div>
 
                   <div className="controls">
@@ -1153,21 +1100,14 @@
                       <option value="neon">{THEMES.neon}</option>
                       <option value="army">{THEMES.army}</option>
                     </select>
-
-                    {theme === "clouds" && (
-                      <>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="video/mp4,video/webm,video/ogg"
-                          style={{display:"none"}}
-                          onChange={onPickVideo}
-                        />
-                        <button className="btn" onClick={triggerPickVideo}>Load cloud video</button>
-                      </>
-                    )}
-
-                    <button className="btn btnDanger" onClick={()=>setShowReset(true)}>Reset progress</button>
+                    <button className="btn btnDanger" onClick={()=>{
+                      // keep notes, reset progress + moves
+                      setCompleted(new Set());
+                      setMoveMap({});
+                      celebratedRef.current = {};
+                    }}>
+                      Reset progress
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1179,8 +1119,7 @@
                     const isToday = day.dateKey === todayKey;
                     const isActive = day.dateKey === selectedDateKey;
                     return (
-                      <button
-                        key={day.dateKey}
+                      <button key={day.dateKey}
                         className={"datePill " + (isActive ? "active " : "") + (isToday ? "today" : "")}
                         onClick={() => setSelectedDateKey(day.dateKey)}
                         title={formatLong(day.date)}
@@ -1194,7 +1133,7 @@
               </div>
 
               {/* Selected day */}
-              <div className="card">
+              <div className="card dayCard">
                 <div className="todayTitle">
                   <h2>{formatLong(selectedDay.date)}</h2>
                   {!selectedDay.note && (
@@ -1220,25 +1159,6 @@
                   </div>
                 ))}
               </div>
-
-              {/* Reset Modal */}
-              {showReset && (
-                <div className="modalOverlay" role="dialog" aria-modal="true">
-                  <div className="card" style={{maxWidth:520}}>
-                    <h3 style={{margin:0, fontSize:16, fontWeight:1000}}>Reset progress?</h3>
-                    <p style={{margin:"8px 0 0", color:"var(--muted)", fontSize:13, lineHeight:1.6}}>
-                      This clears completed checkmarks and moved lectures in your browser (localStorage). Notes remain.
-                    </p>
-                    <div style={{marginTop:14, display:"flex", gap:10, justifyContent:"flex-end", flexWrap:"wrap"}}>
-                      <button className="btn" onClick={()=>setShowReset(false)}>Cancel</button>
-                      <button className="btn btnDanger" onClick={()=>{
-                        resetProgress();
-                        setShowReset(false);
-                      }}>Yes, reset</button>
-                    </div>
-                  </div>
-                </div>
-              )}
 
             </div>
           </div>
