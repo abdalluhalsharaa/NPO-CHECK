@@ -139,7 +139,7 @@
       position: relative;
     }
 
-    /* ✅ Neon runner line around edges (NOT a rotating border feel) */
+    /* ✅ Neon runner line around edges */
     .dayCard{ position: relative; }
     [data-theme="neon"] .dayCard::before{
       content:"";
@@ -158,7 +158,6 @@
           rgba(56,189,248,0) 92%,
           rgba(56,189,248,0) 100%
         );
-      /* show only border */
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
@@ -167,9 +166,7 @@
       opacity: .9;
       animation: runner 1.8s linear infinite;
     }
-    @keyframes runner{
-      to{ --a: 360deg; }
-    }
+    @keyframes runner{ to{ --a: 360deg; } }
 
     /* Header */
     .topRow{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:flex-start; }
@@ -214,10 +211,7 @@
       animation: blinkGlow 1.2s ease-in-out infinite;
       text-shadow: 0 0 14px rgba(56,189,248,.55), 0 0 26px rgba(184,255,106,.35);
     }
-    @keyframes blinkGlow{
-      0%, 100%{ opacity: .65; }
-      50%{ opacity: 1; }
-    }
+    @keyframes blinkGlow{ 0%, 100%{ opacity: .65; } 50%{ opacity: 1; } }
 
     /* Progress */
     .progressMeta{ display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px; color: var(--muted); font-size: 13px; }
@@ -438,7 +432,7 @@
     @keyframes pop{ 0%{ transform: translateX(-50%) translateY(-10px) scale(.98); opacity:0; } 100%{ transform: translateX(-50%) translateY(0) scale(1); opacity:1; } }
     @keyframes fadeOut{ 0%{ opacity:1; } 75%{ opacity:1; } 100%{ opacity:0; } }
 
-    /* ===== Reset Confirmation Modal (Added) ===== */
+    /* ✅ Reset Modal styles (NEW) */
     .modalOverlay{
       position: fixed;
       inset: 0;
@@ -627,7 +621,6 @@
       return pieces;
     }
 
-    // ✅ Done ALWAYS ✅
     function notDoneIcon(theme, subject){
       if(theme === "army") return "💣";
       if(theme === "clouds"){
@@ -644,7 +637,6 @@
       return done ? "✅" : notDoneIcon(theme, subject);
     }
 
-    // Download helper (JSON export)
     function downloadText(filename, text, mime="application/json"){
       const blob = new Blob([text], {type: mime});
       const url = URL.createObjectURL(blob);
@@ -657,7 +649,6 @@
       setTimeout(()=>URL.revokeObjectURL(url), 1000);
     }
 
-    // Print-to-PDF helper (opens print dialog)
     function openPrintWindow(html){
       const w = window.open("", "_blank");
       if(!w) return;
@@ -684,7 +675,7 @@
       const [selectedDateKey, setSelectedDateKey] = useState(base.days[0].dateKey);
       const [notes, setNotes] = useState(()=> ({}));
 
-      // ✅ Added: modal state for Reset confirmation
+      // ✅ Reset confirmation modal state
       const [showResetModal, setShowResetModal] = useState(false);
 
       const [lastMove, setLastMove] = useState(null);
@@ -756,7 +747,6 @@
         return n;
       }, [selectedLectures, completed]);
 
-      // Exams
       const examOrthoHealth = useMemo(()=>new Date(year, 4, 31), [year]);
       const examNeuro = useMemo(()=>new Date(year, 5, 2), [year]);
       const daysToOrthoHealth = useMemo(()=>daysDiff(new Date(), examOrthoHealth), [examOrthoHealth]);
@@ -775,7 +765,6 @@
         return now === startOfDay(examOrthoHealth).getTime();
       }, [examOrthoHealth]);
 
-      // Celebrate
       useEffect(()=>{
         if(selectedDay.note) return;
         if(selectedLectures.length === 0) return;
@@ -822,50 +811,11 @@
         setLastMove(null);
       }
 
-      /* ✅ FIXED NOTES: now writes to notes[dateKey] */
+      /* ✅ FIXED: Notes now work (keyed by dateKey) */
       function updateNote(dateKey, value){
         setNotes(prev => ({ ...prev, [dateKey]: value }));
       }
 
-      // Export JSON
-      function exportJSON(){
-        const payload = {
-          version: 1,
-          exportedAt: new Date().toISOString(),
-          theme,
-          completedIds: Array.from(completed),
-          moveMap,
-          notes
-        };
-        const stamp = new Date().toISOString().slice(0,10);
-        downloadText(`medical-checklist-backup-${stamp}.json`, JSON.stringify(payload, null, 2), "application/json");
-      }
-
-      function triggerImport(){ importInputRef.current?.click(); }
-
-      async function importJSONFile(file){
-        const text = await file.text();
-        let obj;
-        try{ obj = JSON.parse(text); }catch{ alert("Invalid JSON file."); return; }
-        if(!obj || typeof obj !== "object"){ alert("Invalid JSON structure."); return; }
-
-        if(Array.isArray(obj.completedIds)) setCompleted(new Set(obj.completedIds));
-        if(obj.moveMap && typeof obj.moveMap === "object") setMoveMap(obj.moveMap);
-        if(obj.notes && typeof obj.notes === "object") setNotes(obj.notes);
-        if(typeof obj.theme === "string") setTheme(obj.theme);
-
-        celebratedRef.current = {};
-        alert("Import completed ✅");
-      }
-
-      function onImportChange(e){
-        const file = e.target.files && e.target.files[0];
-        if(!file) return;
-        importJSONFile(file);
-        e.target.value = "";
-      }
-
-      // Notes PDF (Selected/All)
       function exportNotesPDF(mode="selected"){
         const dayList = (mode === "all") ? base.days : [selectedDay];
 
@@ -927,7 +877,6 @@
         openPrintWindow(html);
       }
 
-      // Clouds drifting background items
       const clouds = useMemo(()=>{
         const emojis = ["☁️","☀️","🌧️","🌨️","🌙"];
         const items = [];
@@ -943,7 +892,6 @@
         return items;
       }, []);
 
-      // Summary (3 bars)
       const summary = useMemo(()=>{
         const sums = { Ortho:{total:0,done:0}, Healthcare:{total:0,done:0}, Neurology:{total:0,done:0} };
         base.lectures.forEach(L=>{
@@ -1050,7 +998,6 @@
 
       return (
         <>
-          {/* Clouds moving background */}
           {theme === "clouds" && (
             <div className="cloudLayer" aria-hidden="true">
               {clouds.map(c=>(
@@ -1069,7 +1016,6 @@
             </div>
           )}
 
-          {/* Confetti */}
           {confetti.length > 0 && (
             <div className="confettiWrap" aria-hidden="true">
               {confetti.map(p => (
@@ -1083,13 +1029,13 @@
               ))}
             </div>
           )}
+
           {showBanner && (
             <div className="celebrateBanner">
               🎉 Completed all topics for {selectedDay.title}!
             </div>
           )}
 
-          {/* Undo Toast */}
           {lastMove && (
             <div className="toast" role="status" aria-live="polite">
               <div className="toastMsg">{lastMove.msg}</div>
@@ -1099,7 +1045,6 @@
 
           <div className="wrap">
             <div className="container">
-              {/* Header */}
               <div className="card">
                 <div className="topRow">
                   <div>
@@ -1188,7 +1133,6 @@
                     <button className="btn" onClick={()=>exportNotesPDF("selected")}>Notes PDF (Selected)</button>
                     <button className="btn" onClick={()=>exportNotesPDF("all")}>Notes PDF (All)</button>
 
-                    <!-- ✅ Changed: open confirmation modal instead of immediate reset -->
                     <button className="btn btnDanger" onClick={()=>setShowResetModal(true)}>
                       Reset progress
                     </button>
@@ -1196,7 +1140,6 @@
                 </div>
               </div>
 
-              {/* Date strip */}
               <div className="card">
                 <div className="dateStrip" aria-label="Dates">
                   {base.days.map(day => {
@@ -1216,7 +1159,6 @@
                 </div>
               </div>
 
-              {/* Selected day */}
               <div className="card dayCard">
                 <div className="todayTitle">
                   <h2>{formatLong(selectedDay.date)}</h2>
@@ -1227,7 +1169,6 @@
                 {renderDayBox()}
               </div>
 
-              {/* ✅ Restored 3 subject progress cards */}
               <div className="summaryRow">
                 {["Ortho","Healthcare","Neurology"].map(k => (
                   <div className="card summaryCard" key={k}>
@@ -1247,7 +1188,6 @@
             </div>
           </div>
 
-          {/* ✅ Added: Reset Confirmation Modal */}
           {showResetModal && (
             <div className="modalOverlay" role="dialog" aria-modal="true">
               <div className="modalCard">
@@ -1255,4 +1195,30 @@
                 <p className="modalText">
                   This will clear <b>completed checkmarks</b> and <b>moved lectures</b> from this browser.
                   <br />
-                  <b>Notes will stay
+                  <b>Notes will stay</b>.
+                </p>
+                <div className="modalBtns">
+                  <button className="btn" onClick={()=>setShowResetModal(false)}>Cancel</button>
+                  <button
+                    className="btn btnDanger"
+                    onClick={()=>{
+                      setCompleted(new Set());
+                      setMoveMap({});
+                      celebratedRef.current = {};
+                      setShowResetModal(false);
+                    }}
+                  >
+                    Yes, reset
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
